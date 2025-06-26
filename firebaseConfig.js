@@ -3,12 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBvYUJUzsoXndl5OrrrBYD1F3F-r51ZFf0",
-  authDomain: "crud-firebase-70303.firebaseapp.com",
-  projectId: "crud-firebase-70303",
-  storageBucket: "crud-firebase-70303.firebasestorage.app",
-  messagingSenderId: "207298870874",
-  appId: "1:207298870874:web:35c9590f76affe7aff2263"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
