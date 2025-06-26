@@ -14,7 +14,11 @@ export default function HomeScreen({ navigation }) {
         </Text>
 
         <View className="flex-col gap-4 justify-center items-center">
-          <SimpleCard text="Jogadores" icon={"person"} />
+          <SimpleCard
+            text="Jogadores"
+            icon={"person"}
+            onPress={() => navigation.navigate("Jogadores")}
+          />
           <SimpleCard text="Times" icon={"shirt"} />
           <SimpleCard text="Campeonatos" icon={"football"} />
         </View>
