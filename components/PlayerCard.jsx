@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,32 +6,21 @@ import { auth } from "../firebaseConfig";
 import {
   addUserFavorite,
   removeUserFavorite,
-  getUserPlayers,
 } from "../services/userPlayersService";
 
-export default function PlayerCard({ player }) {
+export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    const checkFavorite = async () => {
-      const userId = auth.currentUser?.uid;
-      if (!userId) return;
-      const favs = await getUserPlayers(userId, "player");
-      setIsFavorite(favs.includes(player.idPlayer));
-    };
-    checkFavorite();
-  }, [player.idPlayer]);
 
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
     if (isFavorite) {
       await removeUserFavorite(userId, player.idPlayer, "player");
-      setIsFavorite(false);
     } else {
       await addUserFavorite(userId, player.idPlayer, "player");
-      setIsFavorite(true);
+    }
+    if (onFavoriteChange) {
+      onFavoriteChange();
     }
   };
 

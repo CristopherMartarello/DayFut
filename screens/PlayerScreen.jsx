@@ -13,6 +13,7 @@ export default function PlayerScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [favoritePlayersData, setFavoritePlayersData] = useState([]);
+  const [refreshFavorites, setRefreshFavorites] = useState(false);
 
   // Search teams
   useEffect(() => {
@@ -54,7 +55,11 @@ export default function PlayerScreen() {
       }
     };
     fetchFavorites();
-  }, []);
+  }, [refreshFavorites]);
+
+  const handleFavoriteChange = () => {
+    setRefreshFavorites((prev) => !prev);
+  };
 
   return (
     <>
@@ -102,7 +107,13 @@ export default function PlayerScreen() {
           <FlatList
             data={favoritePlayersData}
             keyExtractor={(item) => item.idPlayer}
-            renderItem={({ item }) => <PlayerCard player={item} />}
+            renderItem={({ item }) => (
+              <PlayerCard
+                player={item}
+                isFavorite={favoritePlayers.includes(item.idPlayer)}
+                onFavoriteChange={handleFavoriteChange}
+              />
+            )}
             horizontal
             showsHorizontalScrollIndicator={false}
           />
@@ -113,7 +124,13 @@ export default function PlayerScreen() {
         className="px-2"
         data={players}
         keyExtractor={(item) => item.idPlayer}
-        renderItem={({ item }) => <PlayerCard player={item} />}
+        renderItem={({ item }) => (
+          <PlayerCard
+            player={item}
+            isFavorite={favoritePlayers.includes(item.idPlayer)}
+            onFavoriteChange={handleFavoriteChange}
+          />
+        )}
         showsVerticalScrollIndicator={false}
       />
     </>
