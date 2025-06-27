@@ -1,14 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { auth } from "../firebaseConfig";
+import {
+  addUserFavorite,
+  removeUserFavorite,
+  getUserFavorites,
+} from "../services/userFavoritesService";
 
 export default function PlayerCard({ player }) {
   const navigation = useNavigation();
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+      const favs = await getUserFavorites(userId, "player");
+      setIsFavorite(favs.includes(player.idPlayer));
+    };
+    checkFavorite();
+  }, [player.idPlayer]);
+
+  const handleToggleFavorite = async () => {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+    if (isFavorite) {
+      await removeUserFavorite(userId, player.idPlayer, "player");
+      setIsFavorite(false);
+    } else {
+      await addUserFavorite(userId, player.idPlayer, "player");
+      setIsFavorite(true);
+    }
+  };
 
   return (
     <TouchableOpacity
       className="bg-white rounded-2xl mb-4 flex-row gap-4 p-2"
       onPress={() => navigation.navigate("Jogador", { player })}
+      activeOpacity={0.8}
     >
       {/* Imagem */}
       {player.strCutout ? (
@@ -31,6 +62,19 @@ export default function PlayerCard({ player }) {
           {player.strPosition}
         </Text>
       </View>
+
+      {/* Botão de favoritar */}
+      <TouchableOpacity
+        onPress={handleToggleFavorite}
+        style={{ padding: 8, alignSelf: "center" }}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name={isFavorite ? "star" : "star-outline"}
+          size={28}
+          color={isFavorite ? "#FFD700" : "#888"}
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
