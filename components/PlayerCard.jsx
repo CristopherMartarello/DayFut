@@ -6,8 +6,8 @@ import { auth } from "../firebaseConfig";
 import {
   addUserFavorite,
   removeUserFavorite,
-  getUserFavorites,
-} from "../services/userFavoritesService";
+  getUserPlayers,
+} from "../services/userPlayersService";
 
 export default function PlayerCard({ player }) {
   const navigation = useNavigation();
@@ -17,7 +17,7 @@ export default function PlayerCard({ player }) {
     const checkFavorite = async () => {
       const userId = auth.currentUser?.uid;
       if (!userId) return;
-      const favs = await getUserFavorites(userId, "player");
+      const favs = await getUserPlayers(userId, "player");
       setIsFavorite(favs.includes(player.idPlayer));
     };
     checkFavorite();

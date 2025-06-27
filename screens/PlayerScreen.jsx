@@ -3,7 +3,7 @@ import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { Menu, TextInput } from "react-native-paper";
 import api from "../api/api";
 import PlayerCard from "../components/PlayerCard";
-import { getUserFavorites } from "../services/userFavoritesService";
+import { getUserPlayers } from "../services/userPlayersService";
 import { auth } from "../firebaseConfig";
 
 export default function PlayerScreen() {
@@ -37,16 +37,15 @@ export default function PlayerScreen() {
     const fetchFavorites = async () => {
       const userId = auth.currentUser?.uid;
       if (!userId) return;
-      const favIds = await getUserFavorites(userId, "player");
+      const favIds = await getUserPlayers(userId, "player");
       setFavoritePlayers(favIds);
 
       // search player data for favorite players
       if (favIds.length > 0) {
-        // ============================================================================================================
-        // ===============================I M P O R T A N T !==========================================================
-        // Maybe use a batch request or parallel requests, if it doesnt accept more than 30 requests at once
         const promises = favIds.map((id) =>
-          api.get(`/lookupplayer.php?id=${id}`).then((res) => res.data.players?.[0])
+          api
+            .get(`/lookupplayer.php?id=${id}`)
+            .then((res) => res.data.players?.[0])
         );
         const favPlayersData = (await Promise.all(promises)).filter(Boolean);
         setFavoritePlayersData(favPlayersData);
