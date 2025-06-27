@@ -3,13 +3,18 @@ import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { Menu, TextInput } from "react-native-paper";
 import api from "../api/api";
 import PlayerCard from "../components/PlayerCard";
+import { getUserFavorites } from "../services/userFavoritesService";
+import { auth } from "../firebaseConfig";
 
 export default function PlayerScreen() {
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("133739");
   const [players, setPlayers] = useState([]);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [favoritePlayers, setFavoritePlayers] = useState([]);
+  const [favoritePlayersData, setFavoritePlayersData] = useState([]);
 
+  // Search teams
   useEffect(() => {
     api
       .get("/search_all_teams.php?l=Spanish La Liga")
@@ -17,6 +22,7 @@ export default function PlayerScreen() {
       .catch((err) => console.error("Erro ao buscar times:", err));
   }, []);
 
+  // Search players by selected team
   useEffect(() => {
     if (selectedTeam) {
       api
@@ -25,6 +31,31 @@ export default function PlayerScreen() {
         .catch((err) => console.error("Erro ao buscar jogadores:", err));
     }
   }, [selectedTeam]);
+
+  // Search favorite players
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+      const favIds = await getUserFavorites(userId, "player");
+      setFavoritePlayers(favIds);
+
+      // search player data for favorite players
+      if (favIds.length > 0) {
+        // ============================================================================================================
+        // ===============================I M P O R T A N T !==========================================================
+        // Maybe use a batch request or parallel requests, if it doesnt accept more than 30 requests at once
+        const promises = favIds.map((id) =>
+          api.get(`/lookupplayer.php?id=${id}`).then((res) => res.data.players?.[0])
+        );
+        const favPlayersData = (await Promise.all(promises)).filter(Boolean);
+        setFavoritePlayersData(favPlayersData);
+      } else {
+        setFavoritePlayersData([]);
+      }
+    };
+    fetchFavorites();
+  }, []);
 
   return (
     <>
@@ -59,6 +90,24 @@ export default function PlayerScreen() {
             />
           ))}
         </Menu>
+      </View>
+
+      {/* Favorite Players Section */}
+      <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+        <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>
+          Meus Jogadores Favoritos
+        </Text>
+        {favoritePlayersData.length === 0 ? (
+          <Text>Nenhum jogador favoritado.</Text>
+        ) : (
+          <FlatList
+            data={favoritePlayersData}
+            keyExtractor={(item) => item.idPlayer}
+            renderItem={({ item }) => <PlayerCard player={item} />}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        )}
       </View>
 
       <FlatList
