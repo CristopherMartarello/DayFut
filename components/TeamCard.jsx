@@ -9,16 +9,16 @@ import {
 } from "../services/userPlayersService";
 import api from "../api/api";
 
-export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
+export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
 
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
     if (isFavorite) {
-      await removeUserFavorite(userId, player.idPlayer, "player");
+      await removeUserFavorite(userId, team.idTeam, "team");
     } else {
-      await addUserFavorite(userId, player.idPlayer, "player");
+      await addUserFavorite(userId, team.idTeam, "team");
     }
     if (onFavoriteChange) {
       onFavoriteChange();
@@ -27,15 +27,15 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
 
   const handlePress = async () => {
     try {
-      const response = await api.get(`/lookupplayer.php?id=${player.idPlayer}`);
-      const fullPlayer = response.data.players?.[0];
-      if (fullPlayer) {
-        navigation.navigate("Jogador", { player: fullPlayer });
+      const response = await api.get(`/lookupteam.php?id=${team.idTeam}`);
+      const fullTeam = response.data.teams?.[0];
+      if (fullTeam) {
+        navigation.navigate("Time", { team: fullTeam });
       } else {
-        console.warn("Jogador não encontrado.");
+        console.warn("Time não encontrado.");
       }
     } catch (err) {
-      console.error("Erro ao buscar jogador completo:", err);
+      console.error("Erro ao buscar time completo:", err);
     }
   };
 
@@ -45,12 +45,12 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
       onPress={handlePress}
       activeOpacity={0.8}
     >
-      {/* Imagem */}
-      {player.strCutout ? (
+      {/* Imagem do escudo */}
+      {team.strBadge ? (
         <Image
-          source={{ uri: player.strCutout }}
-          className="w-24 h-24 rounded-lg bg-gray-200"
-          resizeMode="cover"
+          source={{ uri: team.strBadge }}
+          className="w-24 h-24 rounded-lg bg-gray-200 p-2"
+          resizeMode="contain"
         />
       ) : (
         <View className="w-24 h-24 bg-gray-200 rounded-lg items-center justify-center">
@@ -60,11 +60,9 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
 
       {/* Info resumida */}
       <View className="flex-1 justify-center">
-        <Text className="text-lg font-bold">{player.strPlayer}</Text>
-        <Text className="text-sm text-gray-700">{player.strTeam}</Text>
-        <Text className="text-sm text-gray-500 italic">
-          {player.strPosition}
-        </Text>
+        <Text className="text-lg font-bold">{team.strTeam}</Text>
+        <Text className="text-sm text-gray-700">{team.strCountry}</Text>
+        <Text className="text-sm text-gray-500 italic">{team.strStadium}</Text>
       </View>
 
       {/* Botão de favoritar */}

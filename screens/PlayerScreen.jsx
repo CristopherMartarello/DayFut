@@ -173,13 +173,11 @@ export default function PlayerScreen() {
 
             {/* Seção: Pesquisa e filtro por time */}
             <View className="p-3">
-              <Text className="font-bold mb-2 text-xl">
-                Descobrir Jogadores
-              </Text>
+              <Text className="font-bold mb-2 text-xl">Buscar Jogadores</Text>
               <View className="gap-4">
                 <Searchbar
                   mode="bar"
-                  placeholder="Pesquisar"
+                  placeholder="Pesquisar por nome"
                   onChangeText={setSearchQuery}
                   value={searchQuery}
                 />
