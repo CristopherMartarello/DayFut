@@ -1,3 +1,4 @@
+// App.js
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -6,9 +7,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 
 import LoginScreen from './screens/LoginScreen';
-import HomeScreen from './screens/HomeScreen';
-import PlayerScreen from './screens/PlayerScreen';
 import PlayerDetailsScreen from './screens/PlayerScreenDetail';
+import BottomTabs from './components/BottomTabs';
 import "./globals.css";
 
 const Stack = createNativeStackNavigator();
@@ -25,13 +25,11 @@ export default function App() {
 
   return (
     <PaperProvider>
-
       <NavigationContainer>
         <Stack.Navigator>
           {usuarioLogado ? (
             <>
-              <Stack.Screen name="DayFut" component={HomeScreen} />
-              <Stack.Screen name="Jogadores" component={PlayerScreen} />
+              <Stack.Screen name="Home" component={BottomTabs} options={{ headerShown: false }} />
               <Stack.Screen name="Jogador" component={PlayerDetailsScreen} />
             </>
           ) : (

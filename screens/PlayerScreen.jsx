@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, TouchableOpacity, Text } from "react-native";
-import { Menu, TextInput } from "react-native-paper";
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from "react-native";
+import { Menu, TextInput, Searchbar } from "react-native-paper";
 import api from "../api/api";
 import PlayerCard from "../components/PlayerCard";
 import { getUserPlayers } from "../services/userPlayersService";
 import { auth } from "../firebaseConfig";
+import FavoriteCard from "../components/FavoriteCard";
 
 export default function PlayerScreen() {
   const [teams, setTeams] = useState([]);
@@ -14,6 +22,7 @@ export default function PlayerScreen() {
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [favoritePlayersData, setFavoritePlayersData] = useState([]);
   const [refreshFavorites, setRefreshFavorites] = useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   // Search teams
   useEffect(() => {
@@ -62,66 +71,9 @@ export default function PlayerScreen() {
   };
 
   return (
-    <>
-      <View className="p-8">
-        <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
-          anchor={
-            <TouchableOpacity onPress={() => setMenuVisible(true)}>
-              <TextInput
-                label="Time"
-                mode="outlined"
-                editable={false}
-                pointerEvents="none"
-                value={
-                  teams.find((t) => t.idTeam === selectedTeam)?.strTeam ||
-                  "Selecione um time"
-                }
-                right={<TextInput.Icon icon="menu-down" />}
-              />
-            </TouchableOpacity>
-          }
-        >
-          {teams.map((team) => (
-            <Menu.Item
-              key={team.idTeam}
-              title={team.strTeam}
-              onPress={() => {
-                setSelectedTeam(team.idTeam);
-                setMenuVisible(false);
-              }}
-            />
-          ))}
-        </Menu>
-      </View>
-
-      {/* Favorite Players Section */}
-      <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
-        <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>
-          Meus Jogadores Favoritos
-        </Text>
-        {favoritePlayersData.length === 0 ? (
-          <Text>Nenhum jogador favoritado.</Text>
-        ) : (
-          <FlatList
-            data={favoritePlayersData}
-            keyExtractor={(item) => item.idPlayer}
-            renderItem={({ item }) => (
-              <PlayerCard
-                player={item}
-                isFavorite={favoritePlayers.includes(item.idPlayer)}
-                onFavoriteChange={handleFavoriteChange}
-              />
-            )}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        )}
-      </View>
-
+    <SafeAreaView className="flex-1 pt-3 bg-[#FAFAFA]">
       <FlatList
-        className="px-2"
+        className="p-4"
         data={players}
         keyExtractor={(item) => item.idPlayer}
         renderItem={({ item }) => (
@@ -131,8 +83,82 @@ export default function PlayerScreen() {
             onFavoriteChange={handleFavoriteChange}
           />
         )}
+        ListHeaderComponent={
+          <View>
+            {/* Seção: Jogadores Favoritos */}
+            <View className="px-3">
+              <Text className="font-bold mb-2 text-xl">
+                Meus Jogadores Favoritos
+              </Text>
+              {favoritePlayersData.length === 0 ? (
+                <Text>Nenhum jogador favoritado.</Text>
+              ) : (
+                <FlatList
+                  contentContainerStyle={{
+                    gap: 16,
+                  }}
+                  data={favoritePlayersData}
+                  keyExtractor={(item) => item.idPlayer}
+                  renderItem={({ item }) => (
+                    <FavoriteCard
+                      player={item}
+                      isFavorite={favoritePlayers.includes(item.idPlayer)}
+                      onFavoriteChange={handleFavoriteChange}
+                    />
+                  )}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                />
+              )}
+            </View>
+
+            {/* Seção: Pesquisa e filtro por time */}
+            <View className="p-3">
+              <Text className="font-bold mb-2 text-xl">
+                Descobrir Jogadores
+              </Text>
+              <View className="gap-4">
+                <Searchbar
+                  placeholder="Pesquisar"
+                  onChangeText={setSearchQuery}
+                  value={searchQuery}
+                />
+                <Menu
+                  visible={menuVisible}
+                  onDismiss={() => setMenuVisible(false)}
+                  anchor={
+                    <TouchableOpacity onPress={() => setMenuVisible(true)}>
+                      <TextInput
+                        label="Time"
+                        mode="outlined"
+                        editable={false}
+                        pointerEvents="none"
+                        value={
+                          teams.find((t) => t.idTeam === selectedTeam)
+                            ?.strTeam || "Selecione um time"
+                        }
+                        right={<TextInput.Icon icon="menu-down" />}
+                      />
+                    </TouchableOpacity>
+                  }
+                >
+                  {teams.map((team) => (
+                    <Menu.Item
+                      key={team.idTeam}
+                      title={team.strTeam}
+                      onPress={() => {
+                        setSelectedTeam(team.idTeam);
+                        setMenuVisible(false);
+                      }}
+                    />
+                  ))}
+                </Menu>
+              </View>
+            </View>
+          </View>
+        }
         showsVerticalScrollIndicator={false}
       />
-    </>
+    </SafeAreaView>
   );
 }
