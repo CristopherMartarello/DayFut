@@ -7,6 +7,7 @@ import {
   addUserFavorite,
   removeUserFavorite,
 } from "../services/userPlayersService";
+import api from "../api/api";
 
 export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
@@ -24,10 +25,24 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
     }
   };
 
+  const handlePress = async () => {
+    try {
+      const response = await api.get(`/lookupplayer.php?id=${player.idPlayer}`);
+      const fullPlayer = response.data.players?.[0];
+      if (fullPlayer) {
+        navigation.navigate("Jogador", { player: fullPlayer });
+      } else {
+        console.warn("Jogador não encontrado.");
+      }
+    } catch (err) {
+      console.error("Erro ao buscar jogador completo:", err);
+    }
+  };
+
   return (
     <TouchableOpacity
       className="bg-white rounded-2xl mb-4 flex-row gap-4 p-2"
-      onPress={() => navigation.navigate("Jogador", { player })}
+      onPress={handlePress}
       activeOpacity={0.8}
     >
       {/* Imagem */}

@@ -16,28 +16,82 @@ import FavoriteCard from "../components/FavoriteCard";
 
 export default function PlayerScreen() {
   const [teams, setTeams] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState("133739");
+  const [selectedTeam, setSelectedTeam] = useState("");
+  const [leagues, setLeagues] = useState([]);
+  const [selectedLeague, setSelectedLeague] = useState("Spanish La Liga");
   const [players, setPlayers] = useState([]);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(null);
   const [favoritePlayers, setFavoritePlayers] = useState([]);
   const [favoritePlayersData, setFavoritePlayersData] = useState([]);
   const [refreshFavorites, setRefreshFavorites] = useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      const trimmedQuery = searchQuery.trim();
+
+      if (trimmedQuery.length > 2) {
+        setIsSearching(true);
+        api
+          .get(`/searchplayers.php?p=${encodeURIComponent(trimmedQuery)}`)
+          .then((res) => {
+            setPlayers(Array.isArray(res.data.player) ? res.data.player : []);
+          })
+          .catch((err) => {
+            console.error("Erro ao buscar jogador:", err);
+            setPlayers([]);
+          })
+          .finally(() => setIsSearching(false));
+      } else if (trimmedQuery === "") {
+        // Se limpar a busca, volta ao time atual
+        api
+          .get(`/lookup_all_players.php?id=${selectedTeam}`)
+          .then((res) =>
+            setPlayers(Array.isArray(res.data.player) ? res.data.player : [])
+          )
+          .catch((err) => console.error("Erro ao restaurar jogadores:", err));
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, selectedTeam]);
+
+  // search all available leagues
+  useEffect(() => {
+    api
+      .get("/all_leagues.php")
+      .then((res) => {
+        const validLeagues = res.data.leagues.filter(
+          (l) => l.strSport === "Soccer"
+        );
+        setLeagues(validLeagues);
+      })
+      .catch((err) => console.error("Erro ao buscar ligas:", err));
+  }, []);
 
   // Search teams
   useEffect(() => {
-    api
-      .get("/search_all_teams.php?l=Spanish La Liga")
-      .then((res) => setTeams(res.data.teams))
-      .catch((err) => console.error("Erro ao buscar times:", err));
-  }, []);
+    if (selectedLeague) {
+      api
+        .get(`/search_all_teams.php?l=${encodeURIComponent(selectedLeague)}`)
+        .then((res) => {
+          setTeams(res.data.teams);
+          setSelectedTeam(res.data.teams[0]?.idTeam);
+        })
+        .catch((err) => console.error("Erro ao buscar times:", err));
+    }
+  }, [selectedLeague]);
 
   // Search players by selected team
   useEffect(() => {
     if (selectedTeam) {
+      setSearchQuery("");
       api
         .get(`/lookup_all_players.php?id=${selectedTeam}`)
-        .then((res) => setPlayers(res.data.player || []))
+        .then((res) =>
+          setPlayers(Array.isArray(res.data.player) ? res.data.player : [])
+        )
         .catch((err) => console.error("Erro ao buscar jogadores:", err));
     }
   }, [selectedTeam]);
@@ -70,12 +124,17 @@ export default function PlayerScreen() {
     setRefreshFavorites((prev) => !prev);
   };
 
+  const validPlayers = players.filter(
+    (p, index, self) =>
+      p?.idPlayer && index === self.findIndex((t) => t.idPlayer === p.idPlayer)
+  );
+
   return (
     <SafeAreaView className="flex-1 pt-3 bg-[#FAFAFA]">
       <FlatList
         className="p-4"
-        data={players}
-        keyExtractor={(item) => item.idPlayer}
+        data={validPlayers}
+        keyExtractor={(item) => String(item.idPlayer)}
         renderItem={({ item }) => (
           <PlayerCard
             player={item}
@@ -119,15 +178,45 @@ export default function PlayerScreen() {
               </Text>
               <View className="gap-4">
                 <Searchbar
+                  mode="bar"
                   placeholder="Pesquisar"
                   onChangeText={setSearchQuery}
                   value={searchQuery}
                 />
+                {/* Menu de Ligas */}
                 <Menu
-                  visible={menuVisible}
-                  onDismiss={() => setMenuVisible(false)}
+                  visible={menuVisible === "league"}
+                  onDismiss={() => setMenuVisible(null)}
                   anchor={
-                    <TouchableOpacity onPress={() => setMenuVisible(true)}>
+                    <TouchableOpacity onPress={() => setMenuVisible("league")}>
+                      <TextInput
+                        label="Liga"
+                        mode="outlined"
+                        editable={false}
+                        pointerEvents="none"
+                        value={selectedLeague || "Selecione uma liga"}
+                        right={<TextInput.Icon icon="menu-down" />}
+                      />
+                    </TouchableOpacity>
+                  }
+                >
+                  {leagues.map((league) => (
+                    <Menu.Item
+                      key={league.idLeague}
+                      title={league.strLeague}
+                      onPress={() => {
+                        setSelectedLeague(league.strLeague);
+                        setSelectedTeam("");
+                        setMenuVisible(false);
+                      }}
+                    />
+                  ))}
+                </Menu>
+                <Menu
+                  visible={menuVisible === "team"}
+                  onDismiss={() => setMenuVisible(null)}
+                  anchor={
+                    <TouchableOpacity onPress={() => setMenuVisible("team")}>
                       <TextInput
                         label="Time"
                         mode="outlined"
