@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import HomeScreen from "../screens/HomeScreen";
 import PlayerScreen from "../screens/PlayerScreen";
 import TeamsScreen from "../screens/TeamsScreen";
+import ChampionshipsScreen from "../screens/ChampionshipsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,16 +52,16 @@ export default function BottomTabs() {
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Championships"
-        component={PlayerScreen}
+        component={ChampionshipsScreen}
         options={{
           tabBarLabel: "Campeonatos",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="trophy" color={color} size={size} />
           ),
         }}
-      /> */}
+      />
     </Tab.Navigator>
   );
 }
