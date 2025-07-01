@@ -21,7 +21,7 @@ export default function HomeScreen({ navigation }) {
               onPress={() => navigation.navigate("Jogadores")}
             />
             <SimpleCard text="Times" icon={"shirt"} />
-            <SimpleCard text="Campeonatos" icon={"football"} />
+            <SimpleCard text="Ligas" icon={"football"} />
           </View>
         </ScrollView>
 

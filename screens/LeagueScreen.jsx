@@ -15,8 +15,9 @@ import {
   addUserLeague,
   removeUserLeague,
 } from "../services/userLeaguesService";
+import FavoriteLeagueCard from "../components/FavoriteLeagueCard";
 
-export default function ChampionshipsScreen() {
+export default function LeagueScreen() {
   const [leagues, setLeagues] = useState([]);
   const [filteredLeagues, setFilteredLeagues] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +109,7 @@ export default function ChampionshipsScreen() {
                   keyExtractor={(item) => item.idLeague}
                   horizontal
                   renderItem={({ item }) => (
-                    <LeagueCard
+                    <FavoriteLeagueCard
                       league={item}
                       isFavorite
                       onFavoriteChange={handleFavoriteChange}

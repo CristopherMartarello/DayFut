@@ -8,8 +8,10 @@ import { auth } from './firebaseConfig';
 
 import LoginScreen from './screens/LoginScreen';
 import PlayerDetailsScreen from './screens/PlayerScreenDetail';
+import LeagueScreenDetail from './screens/LeagueScreenDetail';
 import BottomTabs from './components/BottomTabs';
 import "./globals.css";
+import TeamsScreenDetail from './screens/TeamsScreenDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,8 @@ export default function App() {
             <>
               <Stack.Screen name="Home" component={BottomTabs} options={{ headerShown: false }} />
               <Stack.Screen name="Jogador" component={PlayerDetailsScreen} />
+              <Stack.Screen name="Liga" component={LeagueScreenDetail} />
+              <Stack.Screen name="Time" component={TeamsScreenDetail} />
             </>
           ) : (
             <Stack.Screen

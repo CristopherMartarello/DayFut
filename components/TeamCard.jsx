@@ -30,7 +30,7 @@ export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
 
   const handlePress = async () => {
     try {
-      const response = await api.get(`/lookupteam.php?id=${team.idTeam}`);
+      const response = await api.get(`/searchteams.php?t=${team.strTeam}`);
       const fullTeam = response.data.teams?.[0];
       if (fullTeam) {
         navigation.navigate("Time", { team: fullTeam });

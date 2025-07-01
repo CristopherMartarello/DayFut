@@ -146,7 +146,7 @@ export default function PlayerScreen() {
             {/* Seção: Jogadores Favoritos */}
             <View className="px-3">
               <Text className="font-bold mb-2 text-xl">
-                Meus Jogadores Favoritos
+                Jogadores Favoritos
               </Text>
               {favoritePlayersData.length === 0 ? (
                 <Text>Nenhum jogador favoritado.</Text>

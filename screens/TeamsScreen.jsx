@@ -130,9 +130,7 @@ export default function TeamScreen() {
           <View>
             {/* Seção de favoritos */}
             <View className="px-3">
-              <Text className="font-bold mb-2 text-xl">
-                Meus Times Favoritos
-              </Text>
+              <Text className="font-bold mb-2 text-xl">Times Favoritos</Text>
               {favoriteTeamsData.length === 0 ? (
                 <Text>Nenhum time favoritado.</Text>
               ) : (

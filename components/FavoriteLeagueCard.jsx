@@ -8,7 +8,11 @@ import {
   removeUserLeague,
 } from "../services/userLeaguesService";
 
-export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
+export default function FavoriteLeagueCard({
+  league,
+  isFavorite,
+  onFavoriteChange,
+}) {
   const navigation = useNavigation();
 
   const handleToggleFavorite = async () => {
@@ -26,14 +30,14 @@ export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-4 flex-row gap-4 p-2"
+      className="bg-white rounded-2xl mb-4 p-4 flex-col justify-between items-center"
       onPress={() => navigation.navigate("Liga", { leagueId: league.idLeague })}
       activeOpacity={0.8}
     >
       {league.strBadge ? (
         <Image
           source={{ uri: league.strBadge }}
-          className="w-24 h-24 rounded-lg bg-gray-200 p-2"
+          className="min-w-48 min-h-48 rounded-lg bg-gray-200 p-2"
           resizeMode="cover"
         />
       ) : (
@@ -42,29 +46,23 @@ export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
         </View>
       )}
 
-      <View className="flex-1 justify-center">
-        <Text
-          className="text-lg font-bold"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {league.strLeague}
-        </Text>
-        <Text className="text-sm text-gray-600">{league.strCountry}</Text>
-        <Text className="text-sm text-gray-600">{league.strCurrentSeason}</Text>
-      </View>
+      <View className="flex-row justify-between items-center mt-4">
+        <View className="flex-1 pr-2">
+          <Text className="text-lg font-bold">{league.strLeague}</Text>
+          <Text className="text-sm text-gray-600">{league.strCountry}</Text>
+          <Text className="text-sm text-gray-600">
+            {league.strCurrentSeason}
+          </Text>
+        </View>
 
-      <TouchableOpacity
-        onPress={handleToggleFavorite}
-        style={{ padding: 8, alignSelf: "center" }}
-        activeOpacity={0.7}
-      >
-        <Ionicons
-          name={isFavorite ? "star" : "star-outline"}
-          size={28}
-          color={isFavorite ? "#FFD700" : "#888"}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleToggleFavorite}>
+          <Ionicons
+            name={isFavorite ? "star" : "star-outline"}
+            size={28}
+            color={isFavorite ? "#FFD700" : "#888"}
+          />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 }
