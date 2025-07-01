@@ -1,11 +1,12 @@
 import { collection, addDoc, deleteDoc, query, where, getDocs, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-// Adicionar time aos favoritos do usuário
-export async function addUserTeam(userId, teamId) {
+// Adicionar time aos favoritos do usuário (com ID e nome)
+export async function addUserTeam(userId, teamId, teamName) {
     await addDoc(collection(db, "userTeams"), {
         userId,
         teamId,
+        teamName,
     });
 }
 
@@ -22,12 +23,12 @@ export async function removeUserTeam(userId, teamId) {
     });
 }
 
-// Obter todos os IDs de times favoritados por um usuário
+// Obter todos os times favoritados por um usuário (com ID e nome)
 export async function getUserTeams(userId) {
     const q = query(
         collection(db, "userTeams"),
         where("userId", "==", userId)
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => doc.data().teamId);
+    return querySnapshot.docs.map((doc) => doc.data());
 }

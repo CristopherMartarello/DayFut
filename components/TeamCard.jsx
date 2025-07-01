@@ -3,10 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { auth } from "../firebaseConfig";
-import {
-  addUserFavorite,
-  removeUserFavorite,
-} from "../services/userPlayersService";
+import { addUserTeam, removeUserTeam } from "../services/userTeamsService";
 import api from "../api/api";
 
 export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
@@ -15,13 +12,19 @@ export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
-    if (isFavorite) {
-      await removeUserFavorite(userId, team.idTeam, "team");
-    } else {
-      await addUserFavorite(userId, team.idTeam, "team");
-    }
-    if (onFavoriteChange) {
-      onFavoriteChange();
+
+    try {
+      if (isFavorite) {
+        await removeUserTeam(userId, team.idTeam);
+      } else {
+        await addUserTeam(userId, team.idTeam, team.strTeam);
+      }
+
+      if (onFavoriteChange) {
+        onFavoriteChange();
+      }
+    } catch (error) {
+      console.error("Erro ao alternar favorito de time:", error);
     }
   };
 

@@ -3,10 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { auth } from "../firebaseConfig";
-import {
-  addUserFavorite,
-  removeUserFavorite,
-} from "../services/userPlayersService";
+import { addUserTeam, removeUserTeam } from "../services/userTeamsService";
 
 export default function FavoriteTeamCard({
   team,
@@ -18,13 +15,19 @@ export default function FavoriteTeamCard({
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
     if (!userId) return;
-    if (isFavorite) {
-      await removeUserFavorite(userId, team.idTeam, "team");
-    } else {
-      await addUserFavorite(userId, team.idTeam, "team");
-    }
-    if (onFavoriteChange) {
-      onFavoriteChange();
+
+    try {
+      if (isFavorite) {
+        await removeUserTeam(userId, team.idTeam);
+      } else {
+        await addUserTeam(userId, team.idTeam, team.strTeam);
+      }
+
+      if (onFavoriteChange) {
+        onFavoriteChange();
+      }
+    } catch (error) {
+      console.error("Erro ao alternar favorito:", error);
     }
   };
 
@@ -38,17 +41,16 @@ export default function FavoriteTeamCard({
       {team.strBadge ? (
         <Image
           source={{ uri: team.strBadge }}
-          className="min-w-40 min-h-40 rounded-lg bg-gray-200 p-2"
+          className="min-w-48 min-h-48 rounded-lg bg-gray-200 p-4"
           resizeMode="contain"
         />
       ) : (
-        <View className="min-w-64 min-h-64 bg-gray-200 rounded-lg items-center justify-center">
+        <View className="min-w-48 min-h-48 bg-gray-200 rounded-lg items-center justify-center">
           <Text className="text-xs text-gray-500">Sem imagem</Text>
         </View>
       )}
 
       <View className="flex flex-row justify-center">
-        {/* Info resumida */}
         <View className="flex-1 justify-center">
           <Text className="text-lg font-bold">{team.strTeam}</Text>
           <Text className="text-sm text-gray-700">{team.strCountry}</Text>
@@ -57,7 +59,6 @@ export default function FavoriteTeamCard({
           </Text>
         </View>
 
-        {/* Botão de favoritar */}
         <TouchableOpacity
           onPress={handleToggleFavorite}
           style={{ padding: 8, alignSelf: "center" }}

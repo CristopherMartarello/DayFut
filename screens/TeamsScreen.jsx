@@ -66,6 +66,13 @@ export default function TeamScreen() {
             setTeams([]);
           })
           .finally(() => setIsSearching(false));
+      } else if (trimmed === "") {
+        api
+          .get(`/search_all_teams.php?l=${encodeURIComponent(selectedLeague)}`)
+          .then((res) =>
+            setTeams(Array.isArray(res.data.teams) ? res.data.teams : [])
+          )
+          .catch((err) => console.error("Erro ao buscar times:", err));
       }
     }, 500);
     return () => clearTimeout(delay);
@@ -76,12 +83,15 @@ export default function TeamScreen() {
     const fetchFavorites = async () => {
       const userId = auth.currentUser?.uid;
       if (!userId) return;
-      const favIds = await getUserTeams(userId);
-      setFavoriteTeams(favIds);
+      const favTeams = await getUserTeams(userId);
+      console.log(favTeams);
+      setFavoriteTeams(favTeams.map((fav) => fav.teamId));
 
-      if (favIds.length > 0) {
-        const promises = favIds.map((id) =>
-          api.get(`/lookupteam.php?id=${id}`).then((res) => res.data.teams?.[0])
+      if (favTeams.length > 0) {
+        const promises = favTeams.map(({ teamName }) =>
+          api
+            .get(`/searchteams.php?t=${teamName}`)
+            .then((res) => res.data.teams?.[0])
         );
         const data = (await Promise.all(promises)).filter(Boolean);
         setFavoriteTeamsData(data);

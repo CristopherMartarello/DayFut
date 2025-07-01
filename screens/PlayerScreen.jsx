@@ -44,7 +44,6 @@ export default function PlayerScreen() {
           })
           .finally(() => setIsSearching(false));
       } else if (trimmedQuery === "") {
-        // Se limpar a busca, volta ao time atual
         api
           .get(`/lookup_all_players.php?id=${selectedTeam}`)
           .then((res) =>
