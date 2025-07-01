@@ -84,7 +84,6 @@ export default function TeamScreen() {
       const userId = auth.currentUser?.uid;
       if (!userId) return;
       const favTeams = await getUserTeams(userId);
-      console.log(favTeams);
       setFavoriteTeams(favTeams.map((fav) => fav.teamId));
 
       if (favTeams.length > 0) {

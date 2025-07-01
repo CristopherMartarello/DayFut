@@ -86,7 +86,7 @@ export default function LeagueDetailsScreen({ route }) {
           {league.strBanner && (
             <Image
               source={{ uri: league.strBanner }}
-              className="w-full h-48"
+              className="w-full h-48 rounded-full"
               resizeMode="contain"
             />
           )}

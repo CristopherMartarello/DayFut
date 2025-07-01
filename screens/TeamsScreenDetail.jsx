@@ -17,7 +17,7 @@ export default function TeamDetailsScreen({ route }) {
   const [venue, setVenue] = useState(null);
   const [flag, setFlag] = useState(null);
   const [normalizedString, setNormalizedString] = useState("");
-  const [leaguesData, setLeaguesData] = useState([]);
+  // const [leaguesData, setLeaguesData] = useState([]);
 
   useEffect(() => {
     const fetchVenue = async () => {
@@ -73,25 +73,25 @@ export default function TeamDetailsScreen({ route }) {
     return exceptions[cleanName] || cleanName;
   };
 
-  const leaguesList = [];
-  for (let i = 1; i <= 7; i++) {
-    const name = team[i === 1 ? "strLeague" : `strLeague${i}`];
-    const id = team[i === 1 ? "idLeague" : `idLeague${i}`];
-    if (name && id) leaguesList.push({ name, id });
-  }
+  // const leaguesList = [];
+  // for (let i = 1; i <= 7; i++) {
+  //   const name = team[i === 1 ? "strLeague" : `strLeague${i}`];
+  //   const id = team[i === 1 ? "idLeague" : `idLeague${i}`];
+  //   if (name && id) leaguesList.push({ name, id });
+  // }
 
-  useEffect(() => {
-    const fetchLeagues = async () => {
-      const promises = leaguesList.map(({ id }) =>
-        api
-          .get(`/lookupleague.php?id=${id}`)
-          .then((res) => res.data.leagues?.[0])
-      );
-      const results = (await Promise.all(promises)).filter(Boolean);
-      setLeaguesData(results);
-    };
-    if (leaguesList.length) fetchLeagues();
-  }, [team]);
+  // useEffect(() => {
+  //   const fetchLeagues = async () => {
+  //     const promises = leaguesList.map(({ id }) =>
+  //       api
+  //         .get(`/lookupleague.php?id=${id}`)
+  //         .then((res) => res.data.leagues?.[0])
+  //     );
+  //     const results = (await Promise.all(promises)).filter(Boolean);
+  //     setLeaguesData(results);
+  //   };
+  //   if (leaguesList.length) fetchLeagues();
+  // }, [team]);
 
   return (
     <ScrollView className="bg-gray-100" showsVerticalScrollIndicator={false}>
@@ -161,7 +161,7 @@ export default function TeamDetailsScreen({ route }) {
           )}
         </View>
 
-        {leaguesData.length > 0 && (
+        {/* {leaguesData.length > 0 && (
           <View className="my-4">
             <Text className="text-xl font-bold mb-2">Principais Ligas</Text>
             <ScrollView
@@ -190,7 +190,7 @@ export default function TeamDetailsScreen({ route }) {
               ))}
             </ScrollView>
           </View>
-        )}
+        )} */}
 
         {/* Fanarts extras */}
         <View className="my-4">
