@@ -13,8 +13,13 @@ import PlayerCard from "../components/PlayerCard";
 import { getUserPlayers } from "../services/userPlayersService";
 import { auth } from "../firebaseConfig";
 import FavoriteCard from "../components/FavoriteCard";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useTheme } from "../context/ThemeContext";
 
 export default function PlayerScreen() {
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
+
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("");
   const [leagues, setLeagues] = useState([]);
@@ -56,7 +61,6 @@ export default function PlayerScreen() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery, selectedTeam]);
 
-  // search all available leagues
   useEffect(() => {
     api
       .get("/all_leagues.php")
@@ -69,7 +73,6 @@ export default function PlayerScreen() {
       .catch((err) => console.error("Erro ao buscar ligas:", err));
   }, []);
 
-  // Search teams
   useEffect(() => {
     if (selectedLeague) {
       api
@@ -82,7 +85,6 @@ export default function PlayerScreen() {
     }
   }, [selectedLeague]);
 
-  // Search players by selected team
   useEffect(() => {
     if (selectedTeam) {
       setSearchQuery("");
@@ -95,7 +97,6 @@ export default function PlayerScreen() {
     }
   }, [selectedTeam]);
 
-  // Search favorite players
   useEffect(() => {
     const fetchFavorites = async () => {
       const userId = auth.currentUser?.uid;
@@ -103,7 +104,6 @@ export default function PlayerScreen() {
       const favIds = await getUserPlayers(userId, "player");
       setFavoritePlayers(favIds);
 
-      // search player data for favorite players
       if (favIds.length > 0) {
         const promises = favIds.map((id) =>
           api
@@ -129,7 +129,9 @@ export default function PlayerScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 pt-3 bg-[#FAFAFA]">
+    <SafeAreaView
+      className={`flex-1 pt-3 ${isDark ? "bg-zinc-900" : "bg-[#FAFAFA]"}`}
+    >
       <FlatList
         className="p-4"
         data={validPlayers}
@@ -143,18 +145,32 @@ export default function PlayerScreen() {
         )}
         ListHeaderComponent={
           <View>
-            {/* Seção: Jogadores Favoritos */}
             <View className="px-3">
-              <Text className="font-bold mb-2 text-xl">
-                Jogadores Favoritos
-              </Text>
+              <View className="flex-row justify-between items-center mb-4">
+                <Text
+                  className={`font-bold mb-2 text-xl ${
+                    isDark ? "text-gray-200" : "text-zinc-800"
+                  }`}
+                >
+                  Jogadores Favoritos
+                </Text>
+                <TouchableOpacity onPress={toggleTheme}>
+                  <Icon
+                    name={
+                      isDark ? "white-balance-sunny" : "moon-waning-crescent"
+                    }
+                    size={24}
+                    color={isDark ? "#facc15" : "#2563eb"}
+                  />
+                </TouchableOpacity>
+              </View>
               {favoritePlayersData.length === 0 ? (
-                <Text>Nenhum jogador favoritado.</Text>
+                <Text className={isDark ? "text-gray-400" : "text-gray-700"}>
+                  Nenhum jogador favoritado.
+                </Text>
               ) : (
                 <FlatList
-                  contentContainerStyle={{
-                    gap: 16,
-                  }}
+                  contentContainerStyle={{ gap: 16 }}
                   data={favoritePlayersData}
                   keyExtractor={(item) => item.idPlayer}
                   renderItem={({ item }) => (
@@ -170,17 +186,25 @@ export default function PlayerScreen() {
               )}
             </View>
 
-            {/* Seção: Pesquisa e filtro por time */}
             <View className="p-3">
-              <Text className="font-bold mb-2 text-xl">Buscar Jogadores</Text>
+              <Text
+                className={`font-bold mb-2 text-xl ${
+                  isDark ? "text-gray-200" : "text-zinc-800"
+                }`}
+              >
+                Buscar Jogadores
+              </Text>
               <View className="gap-4">
                 <Searchbar
                   mode="bar"
                   placeholder="Pesquisar por nome"
                   onChangeText={setSearchQuery}
                   value={searchQuery}
+                  inputStyle={{ color: isDark ? "#fff" : undefined }}
+                  style={{ backgroundColor: isDark ? "#27272a" : "#fff" }}
+                  iconColor={isDark ? "#fff" : undefined}
+                  placeholderTextColor={isDark ? "#fff" : undefined}
                 />
-                {/* Menu de Ligas */}
                 <Menu
                   visible={menuVisible === "league"}
                   onDismiss={() => setMenuVisible(null)}
@@ -193,6 +217,11 @@ export default function PlayerScreen() {
                         pointerEvents="none"
                         value={selectedLeague || "Selecione uma liga"}
                         right={<TextInput.Icon icon="menu-down" />}
+                        style={{
+                          backgroundColor: isDark ? "#27272a" : "#fff",
+                          color: "#fff",
+                        }}
+                        textColor={isDark ? "#fff" : "#000"}
                       />
                     </TouchableOpacity>
                   }
@@ -224,6 +253,12 @@ export default function PlayerScreen() {
                             ?.strTeam || "Selecione um time"
                         }
                         right={<TextInput.Icon icon="menu-down" />}
+                        style={{
+                          backgroundColor: isDark ? "#27272a" : "#fff",
+                          color: "#fff",
+                        }}
+                        textColor={isDark ? "#fff" : "#000"}
+                        placeholderTextColor={isDark ? "#fff" : undefined}
                       />
                     </TouchableOpacity>
                   }

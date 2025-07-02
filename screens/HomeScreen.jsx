@@ -89,7 +89,6 @@ export default function HomeScreen({ navigation }) {
                   Próximos Jogos
                 </Text>
 
-                {/* Botão de trocar tema */}
                 <TouchableOpacity onPress={toggleTheme}>
                   <Icon
                     name={
@@ -113,14 +112,11 @@ export default function HomeScreen({ navigation }) {
                       pointerEvents="none"
                       value={selectedLeague.strLeague || "Selecione uma liga"}
                       right={<TextInput.Icon icon="menu-down" />}
-                      theme={{
-                        colors: {
-                          text: isDark ? "#FFFFFF" : "#000000",
-                          placeholder: isDark ? "#CCCCCC" : "#6B7280",
-                          primary: "#2563eb",
-                          background: isDark ? "#27272a" : "#FFFFFF",
-                        },
+                      style={{
+                        backgroundColor: isDark ? "#27272a" : "#fff",
+                        color: "#fff",
                       }}
+                      textColor={isDark ? "#fff" : "#000"}
                     />
                   </TouchableOpacity>
                 }

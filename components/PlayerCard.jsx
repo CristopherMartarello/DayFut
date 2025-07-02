@@ -8,9 +8,12 @@ import {
   removeUserFavorite,
 } from "../services/userPlayersService";
 import api from "../api/api";
+import { useTheme } from "../context/ThemeContext";
 
 export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
@@ -39,9 +42,15 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
     }
   };
 
+  const bgCard = isDark ? "bg-zinc-800" : "bg-white";
+  const textPrimary = isDark ? "text-white" : "text-zinc-900";
+  const textSecondary = isDark ? "text-gray-300" : "text-gray-700";
+  const textTertiary = isDark ? "text-gray-400" : "text-gray-500";
+  const bgImageFallback = isDark ? "bg-zinc-700" : "bg-gray-200";
+
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-4 flex-row gap-4 p-2"
+      className={`${bgCard} rounded-2xl mb-4 mt-2 flex-row gap-4 p-2`}
       onPress={handlePress}
       activeOpacity={0.8}
     >
@@ -49,20 +58,25 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
       {player.strCutout ? (
         <Image
           source={{ uri: player.strCutout }}
-          className="w-24 h-24 rounded-lg bg-gray-200"
+          className="w-24 h-24 rounded-lg"
+          style={{ backgroundColor: isDark ? "#3f3f46" : "#e5e7eb" }}
           resizeMode="cover"
         />
       ) : (
-        <View className="w-24 h-24 bg-gray-200 rounded-lg items-center justify-center">
-          <Text className="text-xs text-gray-500">Sem imagem</Text>
+        <View
+          className={`w-24 h-24 ${bgImageFallback} rounded-lg items-center justify-center`}
+        >
+          <Text className={`text-xs ${textTertiary}`}>Sem imagem</Text>
         </View>
       )}
 
       {/* Info resumida */}
       <View className="flex-1 justify-center">
-        <Text className="text-lg font-bold">{player.strPlayer}</Text>
-        <Text className="text-sm text-gray-700">{player.strTeam}</Text>
-        <Text className="text-sm text-gray-500 italic">
+        <Text className={`text-lg font-bold ${textPrimary}`}>
+          {player.strPlayer}
+        </Text>
+        <Text className={`text-sm ${textSecondary}`}>{player.strTeam}</Text>
+        <Text className={`text-sm italic ${textTertiary}`}>
           {player.strPosition}
         </Text>
       </View>
@@ -76,7 +90,7 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
         <Ionicons
           name={isFavorite ? "star" : "star-outline"}
           size={28}
-          color={isFavorite ? "#FFD700" : "#888"}
+          color={isFavorite ? "#FFD700" : isDark ? "#ccc" : "#888"}
         />
       </TouchableOpacity>
     </TouchableOpacity>
