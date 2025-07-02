@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, FlatList } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import api from "../api/api";
 import InfoCard from "../components/InfoCard";
+import CommentSection from "../components/CommentSection";
 
 export default function PlayerDetailsScreen({ route }) {
   const { player } = route.params;
@@ -67,62 +68,129 @@ export default function PlayerDetailsScreen({ route }) {
     return exceptions[cleanName] || cleanName;
   };
 
+  // return (
+  //   <ScrollView className="bg-gray-100" showsVerticalScrollIndicator={false}>
+  //     {/* Imagem do jogador */}
+  //     {player.strThumb && (
+  //       <Image
+  //         source={{ uri: player.strThumb }}
+  //         className="w-full h-96"
+  //         resizeMode="cover"
+  //       />
+  //     )}
+
+  //     {/* Card fixo logo abaixo da imagem */}
+  //     <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
+  //       <Text className="text-3xl font-bold mb-2">{player.strPlayer}</Text>
+
+  //       <Text className="mb-4 text-base text-gray-500">
+  //         {player.strDescriptionBR ?? player.strDescriptionEN}
+  //       </Text>
+
+  //       <View className="flex-row justify-center gap-3">
+  //         <InfoCard imageUri={teamLogo} text={player.strTeam} />
+
+  //         <InfoCard
+  //           icon={<Icon name="tshirt-crew" size={40} color="#2563eb" />}
+  //           text={shirtNumber}
+  //         />
+
+  //         <InfoCard imageUri={flag} text={normalizedString} />
+  //         <InfoCard
+  //           icon={<Icon name="run-fast" size={40} color="#2563eb" />}
+  //           text={player.strPosition}
+  //         />
+  //       </View>
+
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Nascimento: {player.dateBorn} - {player.strBirthLocation}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Altura: {player.strHeight} | Peso: {player.strWeight}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Gênero: {player.strGender === "Male" ? "Masculino" : "Feminino"}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Pé Dominante: {player.strSide === "Left" ? "Esquerdo" : "Direito"}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Situação: {player.strStatus || "Ativo"}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Contrato: {player.strSigning || "Desconhecido"}
+  //       </Text>
+  //       <Text className="text-base text-gray-500 mb-1">
+  //         Kit: {player.strKit || "Desconhecido"}
+  //       </Text>
+  //     </View>
+  //     <CommentSection itemId={player.idPlayer} itemType="player" />
+  //   </ScrollView>
+  // );
   return (
-    <ScrollView className="bg-gray-100" showsVerticalScrollIndicator={false}>
-      {/* Imagem do jogador */}
-      {player.strThumb && (
-        <Image
-          source={{ uri: player.strThumb }}
-          className="w-full h-96"
-          resizeMode="cover"
-        />
-      )}
+    <FlatList
+      data={[]} // vazia = FlatList como container com header e footer
+      keyExtractor={() => "key"}
+      ListHeaderComponent={
+        <View className="bg-gray-100">
+          {player.strThumb && (
+            <Image
+              source={{ uri: player.strThumb }}
+              className="w-full h-96"
+              resizeMode="cover"
+            />
+          )}
 
-      {/* Card fixo logo abaixo da imagem */}
-      <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
-        <Text className="text-3xl font-bold mb-2">{player.strPlayer}</Text>
+          <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
+            <Text className="text-3xl font-bold mb-2">{player.strPlayer}</Text>
 
-        <Text className="mb-4 text-base text-gray-500">
-          {player.strDescriptionBR ?? player.strDescriptionEN}
-        </Text>
+            <Text className="mb-4 text-base text-gray-500">
+              {player.strDescriptionBR ?? player.strDescriptionEN}
+            </Text>
 
-        <View className="flex-row justify-center gap-3">
-          <InfoCard imageUri={teamLogo} text={player.strTeam} />
+            <View className="flex-row justify-center gap-3">
+              <InfoCard imageUri={teamLogo} text={player.strTeam} />
+              <InfoCard
+                icon={<Icon name="tshirt-crew" size={40} color="#2563eb" />}
+                text={shirtNumber}
+              />
+              <InfoCard imageUri={flag} text={normalizedString} />
+              <InfoCard
+                icon={<Icon name="run-fast" size={40} color="#2563eb" />}
+                text={player.strPosition}
+              />
+            </View>
 
-          <InfoCard
-            icon={<Icon name="tshirt-crew" size={40} color="#2563eb" />}
-            text={shirtNumber}
-          />
-
-          <InfoCard imageUri={flag} text={normalizedString} />
-          <InfoCard
-            icon={<Icon name="run-fast" size={40} color="#2563eb" />}
-            text={player.strPosition}
-          />
+            <Text className="text-base text-gray-500 mb-1">
+              Nascimento: {player.dateBorn} - {player.strBirthLocation}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Altura: {player.strHeight} | Peso: {player.strWeight}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Gênero: {player.strGender === "Male" ? "Masculino" : "Feminino"}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Pé Dominante: {player.strSide === "Left" ? "Esquerdo" : "Direito"}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Situação: {player.strStatus || "Ativo"}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Contrato: {player.strSigning || "Desconhecido"}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              Kit: {player.strKit || "Desconhecido"}
+            </Text>
+          </View>
         </View>
-
-        <Text className="text-base text-gray-500 mb-1">
-          Nascimento: {player.dateBorn} - {player.strBirthLocation}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Altura: {player.strHeight} | Peso: {player.strWeight}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Gênero: {player.strGender === "Male" ? "Masculino" : "Feminino"}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Pé Dominante: {player.strSide === "Left" ? "Esquerdo" : "Direito"}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Situação: {player.strStatus || "Ativo"}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Contrato: {player.strSigning || "Desconhecido"}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          Kit: {player.strKit || "Desconhecido"}
-        </Text>
-      </View>
-    </ScrollView>
+      }
+      ListFooterComponent={
+        <View className="mt-4">
+          <CommentSection itemId={player.idPlayer} itemType="player" />
+        </View>
+      }
+      showsVerticalScrollIndicator={false}
+    />
   );
 }

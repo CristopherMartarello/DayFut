@@ -6,11 +6,13 @@ import {
   Image,
   TouchableOpacity,
   Linking,
+  FlatList,
 } from "react-native";
 import api from "../api/api";
 import InfoCard from "../components/InfoCard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SocialLink from "../components/SocialLink";
+import CommentSection from "../components/CommentSection";
 
 export default function LeagueDetailsScreen({ route }) {
   const { leagueId } = route.params;
@@ -32,92 +34,108 @@ export default function LeagueDetailsScreen({ route }) {
   if (!league) return null;
 
   return (
-    <ScrollView className="bg-gray-100" showsVerticalScrollIndicator={false}>
-      {league.strFanart1 && (
-        <Image
-          source={{ uri: league.strFanart1 }}
-          className="w-full h-96"
-          resizeMode="cover"
-        />
-      )}
-
-      <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
-        <Text className="text-3xl font-bold mb-2">{league.strLeague}</Text>
-
-        <Text className="mb-4 text-base text-gray-500">
-          {league.strDescriptionEN || "Sem descrição disponível."}
-        </Text>
-
-        <Text className="text-xl font-bold mb-2">Informações Gerais</Text>
-
-        <View className="flex-row justify-center gap-3 mb-4">
-          <InfoCard
-            icon={<Icon name="calendar" size={40} color="#2563eb" />}
-            text={`${league.intFormedYear}`}
-          />
-          <InfoCard
-            icon={<Icon name="map-marker" size={40} color="#2563eb" />}
-            text={league.strCountry}
-          />
-          <InfoCard
-            imageUri={league.strBadge}
-            text={league.strSport === "Soccer" ? "Futebol" : league.strSport}
-          />
-        </View>
-
-        <Text className="text-base text-gray-500 mb-1">
-          <Text className="font-semibold">Temporada atual:</Text>{" "}
-          {league.strCurrentSeason}
-        </Text>
-        <Text className="text-base text-gray-500 mb-1">
-          <Text className="font-semibold">Esporte:</Text>{" "}
-          {league.strSport === "Soccer" ? "Futebol" : league.strSport}
-        </Text>
-
-        {/* Troféu e Banner */}
-        <View className="mt-6 flex-col justify-center items-center">
-          {league.strTrophy && (
+    <FlatList
+      data={[]}
+      keyExtractor={() => "static"}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <View className="bg-gray-100">
+          {league.strFanart1 && (
             <Image
-              source={{ uri: league.strTrophy }}
-              className="w-full h-64"
-              resizeMode="contain"
+              source={{ uri: league.strFanart1 }}
+              className="w-full h-96"
+              resizeMode="cover"
             />
           )}
-          {league.strBanner && (
-            <Image
-              source={{ uri: league.strBanner }}
-              className="w-full h-48 rounded-full"
-              resizeMode="contain"
-            />
-          )}
-        </View>
 
-        {/* Redes Sociais */}
-        <Text className="text-xl font-bold mb-2">Redes Sociais</Text>
-        <SocialLink label="Website" url={league.strWebsite} />
-        <SocialLink label="Facebook" url={league.strFacebook} />
-        <SocialLink label="Instagram" url={league.strInstagram} />
-        <SocialLink label="Twitter" url={league.strTwitter} />
-        <SocialLink label="YouTube" url={league.strYoutube} />
-        <SocialLink label="RSS" url={league.strRSS} />
+          <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
+            <Text className="text-3xl font-bold mb-2">{league.strLeague}</Text>
 
-        {/* Galeria */}
-        <View className="my-4">
-          <Text className="text-xl font-bold mb-2 text-gray-800">Galeria</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {[league.strFanart2, league.strFanart3, league.strFanart4]
-              .filter(Boolean)
-              .map((img, index) => (
+            <Text className="mb-4 text-base text-gray-500">
+              {league.strDescriptionEN || "Sem descrição disponível."}
+            </Text>
+
+            <Text className="text-xl font-bold mb-2">Informações Gerais</Text>
+
+            <View className="flex-row justify-center gap-3 mb-4">
+              <InfoCard
+                icon={<Icon name="calendar" size={40} color="#2563eb" />}
+                text={`${league.intFormedYear}`}
+              />
+              <InfoCard
+                icon={<Icon name="map-marker" size={40} color="#2563eb" />}
+                text={league.strCountry}
+              />
+              <InfoCard
+                imageUri={league.strBadge}
+                text={
+                  league.strSport === "Soccer" ? "Futebol" : league.strSport
+                }
+              />
+            </View>
+
+            <Text className="text-base text-gray-500 mb-1">
+              <Text className="font-semibold">Temporada atual:</Text>{" "}
+              {league.strCurrentSeason}
+            </Text>
+            <Text className="text-base text-gray-500 mb-1">
+              <Text className="font-semibold">Esporte:</Text>{" "}
+              {league.strSport === "Soccer" ? "Futebol" : league.strSport}
+            </Text>
+
+            {/* Troféu e Banner */}
+            <View className="mt-6 flex-col justify-center items-center">
+              {league.strTrophy && (
                 <Image
-                  key={index}
-                  source={{ uri: img }}
-                  className="w-80 h-80 rounded-xl mr-3"
-                  resizeMode="cover"
+                  source={{ uri: league.strTrophy }}
+                  className="w-full h-64"
+                  resizeMode="contain"
                 />
-              ))}
-          </ScrollView>
+              )}
+              {league.strBanner && (
+                <Image
+                  source={{ uri: league.strBanner }}
+                  className="w-full h-48 rounded-full"
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+
+            {/* Redes Sociais */}
+            <Text className="text-xl font-bold mb-2 mt-6">Redes Sociais</Text>
+            <SocialLink label="Website" url={league.strWebsite} />
+            <SocialLink label="Facebook" url={league.strFacebook} />
+            <SocialLink label="Instagram" url={league.strInstagram} />
+            <SocialLink label="Twitter" url={league.strTwitter} />
+            <SocialLink label="YouTube" url={league.strYoutube} />
+            <SocialLink label="RSS" url={league.strRSS} />
+
+            {/* Galeria */}
+            <View className="my-4">
+              <Text className="text-xl font-bold mb-2 text-gray-800">
+                Galeria
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {[league.strFanart2, league.strFanart3, league.strFanart4]
+                  .filter(Boolean)
+                  .map((img, index) => (
+                    <Image
+                      key={index}
+                      source={{ uri: img }}
+                      className="w-80 h-80 rounded-xl mr-3"
+                      resizeMode="cover"
+                    />
+                  ))}
+              </ScrollView>
+            </View>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      }
+      ListFooterComponent={
+        <View className="mt-4 px-4">
+          <CommentSection itemId={league.idLeague} itemType="league" />
+        </View>
+      }
+    />
   );
 }
