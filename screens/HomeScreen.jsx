@@ -3,9 +3,7 @@ import {
   SafeAreaView,
   View,
   Text,
-  ScrollView,
   FlatList,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import { ActivityIndicator, Button, Menu, TextInput } from "react-native-paper";
@@ -14,16 +12,20 @@ import { auth } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 import api from "../api/api";
 import EventCard from "../components/EventCard";
+import { useTheme } from "../context/ThemeContext";
 
 export default function HomeScreen({ navigation }) {
+  const { theme, toggleTheme } = useTheme();
+
+  const isDark = theme === "dark";
+
   const [selectedLeague, setSelectedLeague] = useState({
     strLeague: "English Premier League",
     idLeague: "4328",
   });
-  const [visible, setVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [events, setEvents] = useState([]);
   const [leagues, setLeagues] = useState([]);
-  const [menuVisible, setMenuVisible] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -47,7 +49,6 @@ export default function HomeScreen({ navigation }) {
     if (selectedLeague) fetchEvents();
   }, [selectedLeague]);
 
-  // search all available leagues
   useEffect(() => {
     api
       .get("/all_leagues.php")
@@ -61,7 +62,9 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FAFAFA]">
+    <SafeAreaView
+      className={`flex-1 ${isDark ? "bg-zinc-900" : "bg-[#FAFAFA]"}`}
+    >
       {isLoading ? (
         <ActivityIndicator
           size="large"
@@ -77,11 +80,27 @@ export default function HomeScreen({ navigation }) {
           renderItem={({ item }) => <EventCard item={item} />}
           ListHeaderComponent={
             <View className="p-2">
-              <Text className="text-xl font-bold text-zinc-800 mb-4">
-                Próximos Jogos
-              </Text>
+              <View className="flex-row justify-between items-center mb-4">
+                <Text
+                  className={`text-xl font-bold ${
+                    isDark ? "text-white" : "text-zinc-800"
+                  }`}
+                >
+                  Próximos Jogos
+                </Text>
 
-              {/* Menu de Ligas */}
+                {/* Botão de trocar tema */}
+                <TouchableOpacity onPress={toggleTheme}>
+                  <Icon
+                    name={
+                      isDark ? "white-balance-sunny" : "moon-waning-crescent"
+                    }
+                    size={24}
+                    color={isDark ? "#facc15" : "#2563eb"}
+                  />
+                </TouchableOpacity>
+              </View>
+
               <Menu
                 visible={menuVisible}
                 onDismiss={() => setMenuVisible(false)}
@@ -94,6 +113,14 @@ export default function HomeScreen({ navigation }) {
                       pointerEvents="none"
                       value={selectedLeague.strLeague || "Selecione uma liga"}
                       right={<TextInput.Icon icon="menu-down" />}
+                      theme={{
+                        colors: {
+                          text: isDark ? "#FFFFFF" : "#000000",
+                          placeholder: isDark ? "#CCCCCC" : "#6B7280",
+                          primary: "#2563eb",
+                          background: isDark ? "#27272a" : "#FFFFFF",
+                        },
+                      }}
                     />
                   </TouchableOpacity>
                 }
@@ -110,14 +137,25 @@ export default function HomeScreen({ navigation }) {
                 ))}
               </Menu>
 
-              {/* Sem eventos */}
               {!events && (
-                <View className="bg-white rounded-2xl p-6 items-center justify-center shadow-md mt-8 mx-1">
+                <View
+                  className={`rounded-2xl p-6 items-center justify-center shadow-md mt-8 mx-1 ${
+                    isDark ? "bg-zinc-800" : "bg-white"
+                  }`}
+                >
                   <Icon name="calendar-remove" size={48} color="#9ca3af" />
-                  <Text className="text-lg font-semibold text-zinc-700 mt-4 text-center">
+                  <Text
+                    className={`text-lg font-semibold mt-4 text-center ${
+                      isDark ? "text-white" : "text-zinc-700"
+                    }`}
+                  >
                     Sem jogos disponíveis
                   </Text>
-                  <Text className="text-base text-gray-500 text-center mt-2">
+                  <Text
+                    className={`text-base text-center mt-2 ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
                     Nenhum resultado encontrado para esta liga.
                   </Text>
                 </View>

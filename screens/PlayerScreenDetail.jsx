@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, FlatList } from "react-native";
+import { View, Text, Image, FlatList } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import api from "../api/api";
 import InfoCard from "../components/InfoCard";
 import CommentSection from "../components/CommentSection";
+import { useTheme } from "../context/ThemeContext";
 
 export default function PlayerDetailsScreen({ route }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const { player } = route.params;
-  console.log(player);
   const [teamLogo, setTeamLogo] = useState(null);
   const [flag, setFlag] = useState(null);
   const [normalizedString, setNormalizedString] = useState("");
@@ -15,16 +18,12 @@ export default function PlayerDetailsScreen({ route }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Buscar logo do time
         const teamRes = await api.get(
           `/searchteams.php?t=${encodeURIComponent(player.strTeam)}`
         );
         const team = teamRes.data.teams?.[0];
-        if (team?.strBadge) {
-          setTeamLogo(team.strBadge);
-        }
+        if (team?.strBadge) setTeamLogo(team.strBadge);
 
-        // 2. Buscar bandeira do país
         const correctedName = normalizeNationality(player.strNationality);
         setNormalizedString(correctedName);
 
@@ -35,11 +34,9 @@ export default function PlayerDetailsScreen({ route }) {
         );
         const countryData = await countryRes.json();
         const flagUrl = countryData?.[0]?.flags?.png;
-        if (flagUrl) {
-          setFlag(flagUrl);
-        }
+        if (flagUrl) setFlag(flagUrl);
       } catch (error) {
-        console.error("Erro ao buscar dados do time ou país:", error);
+        console.error("Erro ao buscar dados:", error);
       }
     };
 
@@ -64,17 +61,16 @@ export default function PlayerDetailsScreen({ route }) {
       Russia: "Russian Federation",
     };
 
-    // Remove "The" e normaliza exceções
     const cleanName = nationality.replace(/^the\s+/i, "").trim();
     return exceptions[cleanName] || cleanName;
   };
 
   return (
     <FlatList
-      data={[]} // vazia = FlatList como container com header e footer
+      data={[]} // usar FlatList como container
       keyExtractor={() => "key"}
       ListHeaderComponent={
-        <View className="bg-gray-100">
+        <View className={`${isDark ? "bg-zinc-900" : "bg-gray-100"}`}>
           {player.strThumb && (
             <Image
               source={{ uri: player.strThumb }}
@@ -83,10 +79,24 @@ export default function PlayerDetailsScreen({ route }) {
             />
           )}
 
-          <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
-            <Text className="text-3xl font-bold mb-2">{player.strPlayer}</Text>
+          <View
+            className={`mt-[-18px] rounded-t-3xl p-6 shadow-lg z-10 ${
+              isDark ? "bg-zinc-800" : "bg-white"
+            }`}
+          >
+            <Text
+              className={`text-3xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-zinc-800"
+              }`}
+            >
+              {player.strPlayer}
+            </Text>
 
-            <Text className="mb-4 text-base text-gray-500">
+            <Text
+              className={`mb-4 text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              }`}
+            >
               {player.strDescriptionBR ?? player.strDescriptionEN}
             </Text>
 
@@ -103,32 +113,60 @@ export default function PlayerDetailsScreen({ route }) {
               />
             </View>
 
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Nascimento: {player.dateBorn} - {player.strBirthLocation}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Altura: {player.strHeight} | Peso: {player.strWeight}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Gênero: {player.strGender === "Male" ? "Masculino" : "Feminino"}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Pé Dominante: {player.strSide === "Left" ? "Esquerdo" : "Direito"}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Situação: {player.strStatus || "Ativo"}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Contrato: {player.strSigning || "Desconhecido"}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              } mb-1`}
+            >
               Kit: {player.strKit || "Desconhecido"}
             </Text>
           </View>
         </View>
       }
       ListFooterComponent={
-        <View className="mt-4">
+        <View className={`${isDark ? "bg-zinc-900" : "bg-white"}`}>
           <CommentSection itemId={player.idPlayer} itemType="player" />
         </View>
       }
