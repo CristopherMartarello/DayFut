@@ -12,6 +12,8 @@ import api from "../api/api";
 import { getUserTeams } from "../services/userTeamsService";
 import TeamCard from "../components/TeamCard";
 import FavoriteTeamCard from "../components/FavoriteTeamCard";
+import { useTheme } from "../context/ThemeContext";
+import SectionHeader from "../components/SectionHeader";
 
 export default function TeamScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -25,7 +27,9 @@ export default function TeamScreen() {
   const [favoriteTeamsData, setFavoriteTeamsData] = useState([]);
   const [refreshFavorites, setRefreshFavorites] = useState(false);
 
-  // Ligas
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
+
   useEffect(() => {
     api
       .get("/all_leagues.php")
@@ -38,7 +42,6 @@ export default function TeamScreen() {
       .catch((err) => console.error("Erro ao buscar ligas:", err));
   }, []);
 
-  // Times por Liga
   useEffect(() => {
     if (selectedLeague && searchQuery.trim() === "") {
       api
@@ -50,7 +53,6 @@ export default function TeamScreen() {
     }
   }, [selectedLeague]);
 
-  // Times por Nome
   useEffect(() => {
     const delay = setTimeout(() => {
       const trimmed = searchQuery.trim();
@@ -78,7 +80,6 @@ export default function TeamScreen() {
     return () => clearTimeout(delay);
   }, [searchQuery]);
 
-  // Favoritos
   useEffect(() => {
     const fetchFavorites = async () => {
       const userId = auth.currentUser?.uid;
@@ -113,7 +114,9 @@ export default function TeamScreen() {
     : [];
 
   return (
-    <SafeAreaView className="flex-1 pt-3 bg-[#FAFAFA]">
+    <SafeAreaView
+      className={`flex-1 pt-3 ${isDark ? "bg-zinc-900" : "bg-[#FAFAFA]"}`}
+    >
       <FlatList
         className="p-4"
         data={validTeams}
@@ -127,11 +130,12 @@ export default function TeamScreen() {
         )}
         ListHeaderComponent={
           <View>
-            {/* Seção de favoritos */}
             <View className="px-3">
-              <Text className="font-bold mb-2 text-xl">Times Favoritos</Text>
+              <SectionHeader title={"Times Favoritos"} />
               {favoriteTeamsData.length === 0 ? (
-                <Text>Nenhum time favoritado.</Text>
+                <Text style={{ color: isDark ? "#ccc" : "#000" }}>
+                  Nenhum time favoritado.
+                </Text>
               ) : (
                 <FlatList
                   data={favoriteTeamsData}
@@ -150,14 +154,22 @@ export default function TeamScreen() {
               )}
             </View>
 
-            {/* Filtros */}
             <View className="p-3">
-              <Text className="font-bold mb-2 text-xl">Buscar Times</Text>
+              <Text
+                className="font-bold mb-2 text-xl"
+                style={{ color: isDark ? "#fff" : "#000" }}
+              >
+                Buscar Times
+              </Text>
               <View className="gap-4">
                 <Searchbar
                   placeholder="Pesquisar por nome"
                   onChangeText={setSearchQuery}
                   value={searchQuery}
+                  inputStyle={{ color: isDark ? "#fff" : undefined }}
+                  style={{ backgroundColor: isDark ? "#27272a" : "#fff" }}
+                  iconColor={isDark ? "#fff" : undefined}
+                  placeholderTextColor={isDark ? "#9ca3af" : undefined}
                 />
                 <Menu
                   visible={menuVisible === "league"}
@@ -171,6 +183,11 @@ export default function TeamScreen() {
                         pointerEvents="none"
                         value={selectedLeague || "Selecione uma liga"}
                         right={<TextInput.Icon icon="menu-down" />}
+                        style={{
+                          backgroundColor: isDark ? "#27272a" : "#fff",
+                          color: "#fff",
+                        }}
+                        textColor={isDark ? "#fff" : "#000"}
                       />
                     </TouchableOpacity>
                   }

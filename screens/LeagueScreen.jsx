@@ -16,6 +16,8 @@ import {
   removeUserLeague,
 } from "../services/userLeaguesService";
 import FavoriteLeagueCard from "../components/FavoriteLeagueCard";
+import SectionHeader from "../components/SectionHeader";
+import { useTheme } from "../context/ThemeContext";
 
 export default function LeagueScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -23,6 +25,9 @@ export default function LeagueScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [favoriteLeagues, setFavoriteLeagues] = useState([]);
   const [refreshFavorites, setRefreshFavorites] = useState(false);
+
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -81,10 +86,10 @@ export default function LeagueScreen() {
     favoriteLeagues.includes(l.idLeague)
   );
 
-  console.log(leagues);
-
   return (
-    <SafeAreaView className="flex-1 pt-3 bg-[#FAFAFA]">
+    <SafeAreaView
+      className={`flex-1 pt-3 ${isDark ? "bg-zinc-900" : "bg-[#FAFAFA]"}`}
+    >
       <FlatList
         className="p-4"
         data={filteredLeagues}
@@ -100,9 +105,15 @@ export default function LeagueScreen() {
           <View>
             {/* Favoritos */}
             <View className="px-3">
-              <Text className="font-bold mb-2 text-xl">Ligas Favoritas</Text>
+              <SectionHeader title="Ligas Favoritas" />
               {favoritesData.length === 0 ? (
-                <Text>Nenhuma liga favoritada.</Text>
+                <Text
+                  className={`mb-2 text-base ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Nenhuma liga favoritada.
+                </Text>
               ) : (
                 <FlatList
                   data={favoritesData}
@@ -123,11 +134,21 @@ export default function LeagueScreen() {
 
             {/* Barra de busca */}
             <View className="p-3">
-              <Text className="font-bold mb-2 text-xl">Buscar Ligas</Text>
+              <Text
+                className={`font-bold mb-2 text-xl ${
+                  isDark ? "text-gray-200" : "text-zinc-800"
+                }`}
+              >
+                Buscar Ligas
+              </Text>
               <Searchbar
                 placeholder="Buscar por nome"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                inputStyle={{ color: isDark ? "#fff" : undefined }}
+                style={{ backgroundColor: isDark ? "#27272a" : "#fff" }}
+                iconColor={isDark ? "#fff" : undefined}
+                placeholderTextColor={isDark ? "#9ca3af" : undefined}
               />
             </View>
           </View>

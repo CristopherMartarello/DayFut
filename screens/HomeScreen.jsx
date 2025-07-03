@@ -13,6 +13,7 @@ import { signOut } from "firebase/auth";
 import api from "../api/api";
 import EventCard from "../components/EventCard";
 import { useTheme } from "../context/ThemeContext";
+import SectionHeader from "../components/SectionHeader";
 
 export default function HomeScreen({ navigation }) {
   const { theme, toggleTheme } = useTheme();
@@ -80,25 +81,7 @@ export default function HomeScreen({ navigation }) {
           renderItem={({ item }) => <EventCard item={item} />}
           ListHeaderComponent={
             <View className="p-2">
-              <View className="flex-row justify-between items-center mb-4">
-                <Text
-                  className={`text-xl font-bold ${
-                    isDark ? "text-white" : "text-zinc-800"
-                  }`}
-                >
-                  Próximos Jogos
-                </Text>
-
-                <TouchableOpacity onPress={toggleTheme}>
-                  <Icon
-                    name={
-                      isDark ? "white-balance-sunny" : "moon-waning-crescent"
-                    }
-                    size={24}
-                    color={isDark ? "#facc15" : "#2563eb"}
-                  />
-                </TouchableOpacity>
-              </View>
+              <SectionHeader title={"Próximos Jogos"} />
 
               <Menu
                 visible={menuVisible}

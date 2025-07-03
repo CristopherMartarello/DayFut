@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { auth } from "../firebaseConfig";
 import { addUserTeam, removeUserTeam } from "../services/userTeamsService";
+import { useTheme } from "../context/ThemeContext";
 
 export default function FavoriteTeamCard({
   team,
@@ -11,6 +12,8 @@ export default function FavoriteTeamCard({
   onFavoriteChange,
 }) {
   const navigation = useNavigation();
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
@@ -33,7 +36,9 @@ export default function FavoriteTeamCard({
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-4 flex-col gap-4 p-4"
+      className={`rounded-2xl mb-4 flex-col gap-4 p-4 ${
+        isDark ? "bg-zinc-800" : "bg-white"
+      }`}
       onPress={() => navigation.navigate("Time", { team })}
       activeOpacity={0.8}
     >
@@ -41,7 +46,9 @@ export default function FavoriteTeamCard({
       {team.strBadge ? (
         <Image
           source={{ uri: team.strBadge }}
-          className="min-w-48 min-h-48 rounded-lg bg-gray-200 p-4"
+          className={`min-w-48 min-h-48 rounded-lg ${
+            isDark ? "bg-zinc-900" : "bg-gray-200"
+          } p-4`}
           resizeMode="contain"
         />
       ) : (
@@ -52,9 +59,22 @@ export default function FavoriteTeamCard({
 
       <View className="flex flex-row justify-center">
         <View className="flex-1 justify-center">
-          <Text className="text-lg font-bold">{team.strTeam}</Text>
-          <Text className="text-sm text-gray-700">{team.strCountry}</Text>
-          <Text className="text-sm text-gray-500 italic">
+          <Text
+            className="text-lg font-bold"
+            style={{ color: isDark ? "#ffffff" : "#111827" }}
+          >
+            {team.strTeam}
+          </Text>
+          <Text
+            className="text-sm"
+            style={{ color: isDark ? "#d1d5db" : "#374151" }}
+          >
+            {team.strCountry}
+          </Text>
+          <Text
+            className="text-sm italic"
+            style={{ color: isDark ? "#9ca3af" : "#6b7280" }}
+          >
             {team.strStadium}
           </Text>
         </View>
@@ -67,7 +87,7 @@ export default function FavoriteTeamCard({
           <Ionicons
             name={isFavorite ? "star" : "star-outline"}
             size={34}
-            color={isFavorite ? "#FFD700" : "#888"}
+            color={isFavorite ? "#FFD700" : isDark ? "#ccc" : "#888"}
           />
         </TouchableOpacity>
       </View>

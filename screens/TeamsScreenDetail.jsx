@@ -12,46 +12,14 @@ import {
 import InfoCard from "../components/InfoCard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import CommentSection from "../components/CommentSection";
+import { useTheme } from "../context/ThemeContext";
 
 export default function TeamDetailsScreen({ route }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const { team } = route.params;
   const [flag, setFlag] = useState(null);
   const [normalizedString, setNormalizedString] = useState("");
-
-  // muitas requisições, só possível se com plano premium
-  // const [venue, setVenue] = useState(null);
-  // const [leaguesData, setLeaguesData] = useState([]);
-  // useEffect(() => {
-  //   const fetchVenue = async () => {
-  //     try {
-  //       const res = await api.get(`/lookupvenue.php?id=${team.idVenue}`);
-  //       setVenue(res.data.venues?.[0]);
-  //     } catch (err) {
-  //       console.error("Erro ao buscar estádio:", err);
-  //     }
-  //   };
-
-  //   fetchVenue();
-  // }, []);
-  // const leaguesList = [];
-  // for (let i = 1; i <= 7; i++) {
-  //   const name = team[i === 1 ? "strLeague" : `strLeague${i}`];
-  //   const id = team[i === 1 ? "idLeague" : `idLeague${i}`];
-  //   if (name && id) leaguesList.push({ name, id });
-  // }
-
-  // useEffect(() => {
-  //   const fetchLeagues = async () => {
-  //     const promises = leaguesList.map(({ id }) =>
-  //       api
-  //         .get(`/lookupleague.php?id=${id}`)
-  //         .then((res) => res.data.leagues?.[0])
-  //     );
-  //     const results = (await Promise.all(promises)).filter(Boolean);
-  //     setLeaguesData(results);
-  //   };
-  //   if (leaguesList.length) fetchLeagues();
-  // }, [team]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,11 +64,11 @@ export default function TeamDetailsScreen({ route }) {
 
   return (
     <FlatList
-      data={[]} // vazia = só header e footer
+      data={[]}
       keyExtractor={() => "key"}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <View className="bg-gray-100">
+        <View className={`${isDark ? "bg-zinc-900" : "bg-gray-100"}`}>
           {team.strFanart1 && (
             <Image
               source={{ uri: team.strFanart1 }}
@@ -109,19 +77,42 @@ export default function TeamDetailsScreen({ route }) {
             />
           )}
 
-          <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
-            <Text className="text-3xl font-bold mb-2">{team.strTeam}</Text>
+          <View
+            className={`mt-[-18px] p-6 rounded-t-3xl shadow-lg z-10 ${
+              isDark ? "bg-zinc-800" : "bg-white"
+            }`}
+          >
+            <Text
+              className={`text-3xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-zinc-800"
+              }`}
+            >
+              {team.strTeam}
+            </Text>
 
-            <Text className="mb-4 text-base text-gray-500">
+            <Text
+              className={`mb-4 text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              }`}
+            >
               {team.strDescriptionEN ||
                 team.strStadiumDescription ||
                 "Sem descrição."}
             </Text>
 
-            <Text className="text-xl font-bold mb-2">Informações Gerais</Text>
+            <Text
+              className="text-xl font-bold mb-2"
+              style={{ color: isDark ? "#fff" : "#000" }}
+            >
+              Informações Gerais
+            </Text>
 
             <View className="flex-row justify-center gap-3">
-              <View className="items-center bg-gray-100 p-4 rounded-xl mb-4 w-24">
+              <View
+                className={`items-center p-4 rounded-xl mb-4 w-24 ${
+                  isDark ? "bg-zinc-700" : "bg-gray-100"
+                }`}
+              >
                 <Image
                   source={{ uri: team.strEquipment }}
                   className="w-20 h-20"
@@ -140,21 +131,33 @@ export default function TeamDetailsScreen({ route }) {
               <InfoCard imageUri={team.strBadge} text={team.strTeam} />
             </View>
 
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className="text-base mb-1"
+              style={{ color: isDark ? "#9ca3af" : "#6b7280" }}
+            >
               <Text className="font-semibold">Fundado em:</Text>{" "}
               {team.intFormedYear}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className="text-base mb-1"
+              style={{ color: isDark ? "#9ca3af" : "#6b7280" }}
+            >
               <Text className="font-semibold">Estádio:</Text> {team.strStadium}{" "}
               ({team.intStadiumCapacity} lugares)
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className="text-base mb-1"
+              style={{ color: isDark ? "#9ca3af" : "#6b7280" }}
+            >
               <Text className="font-semibold">Localização:</Text>{" "}
               {team.strLocation}
             </Text>
 
             <View className="flex-row flex-wrap mb-1">
-              <Text className="text-base font-semibold text-gray-500">
+              <Text
+                className="text-base font-semibold"
+                style={{ color: isDark ? "#9ca3af" : "#6b7280" }}
+              >
                 Site Oficial:{" "}
               </Text>
               {team.strWebsite && (
@@ -170,7 +173,10 @@ export default function TeamDetailsScreen({ route }) {
 
             {/* Galeria */}
             <View className="my-4">
-              <Text className="text-xl font-bold mb-2 text-gray-800">
+              <Text
+                className="text-xl font-bold mb-2"
+                style={{ color: isDark ? "#fff" : "#000" }}
+              >
                 Galeria
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -186,44 +192,11 @@ export default function TeamDetailsScreen({ route }) {
                   ))}
               </ScrollView>
             </View>
-
-            {/* Informações do estádio -> muitas requisições, só possível se com plano premium da api */}
-            {/* {venue && (
-              <View className="my-4">
-                <Text className="text-xl font-semibold mb-2">
-                  {venue.strVenue}
-                </Text>
-                <Text className="text-base text-gray-700 mb-3">
-                  {venue.strDescriptionEN}
-                </Text>
-
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 10 }}
-                >
-                  {[
-                    venue.strFanart1,
-                    venue.strFanart2,
-                    venue.strFanart3,
-                    venue.strFanart4,
-                  ]
-                    .filter(Boolean)
-                    .map((img, idx) => (
-                      <Image
-                        key={idx}
-                        source={{ uri: img }}
-                        style={{ width: 300, height: 180, borderRadius: 10 }}
-                      />
-                    ))}
-                </ScrollView>
-              </View>
-            )} */}
           </View>
         </View>
       }
       ListFooterComponent={
-        <View className="mt-4 px-4">
+        <View className={`${isDark ? "bg-zinc-900" : "bg-white"}`}>
           <CommentSection itemId={team.idTeam} itemType="team" />
         </View>
       }

@@ -7,6 +7,7 @@ import {
   addUserLeague,
   removeUserLeague,
 } from "../services/userLeaguesService";
+import { useTheme } from "../context/ThemeContext";
 
 export default function FavoriteLeagueCard({
   league,
@@ -14,6 +15,8 @@ export default function FavoriteLeagueCard({
   onFavoriteChange,
 }) {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
     const userId = auth.currentUser?.uid;
@@ -30,14 +33,18 @@ export default function FavoriteLeagueCard({
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-4 p-4 flex-col justify-between items-center"
+      className={`rounded-2xl mb-4 p-4 flex-col justify-between items-center ${
+        isDark ? "bg-zinc-800" : "bg-white"
+      }`}
       onPress={() => navigation.navigate("Liga", { leagueId: league.idLeague })}
       activeOpacity={0.8}
     >
       {league.strBadge ? (
         <Image
           source={{ uri: league.strBadge }}
-          className="min-w-48 min-h-48 rounded-lg bg-gray-200 p-2"
+          className={`min-w-48 min-h-48 rounded-lg p-2 ${
+            isDark ? "bg-zinc-900" : "bg-gray-200"
+          }`}
           resizeMode="cover"
         />
       ) : (
@@ -48,9 +55,21 @@ export default function FavoriteLeagueCard({
 
       <View className="flex-row justify-between items-center mt-4">
         <View className="flex-1 pr-2">
-          <Text className="text-lg font-bold">{league.strLeague}</Text>
-          <Text className="text-sm text-gray-600">{league.strCountry}</Text>
-          <Text className="text-sm text-gray-600">
+          <Text
+            className={`text-lg font-bold ${
+              isDark ? "text-white" : "text-black"
+            }`}
+          >
+            {league.strLeague}
+          </Text>
+          <Text
+            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          >
+            {league.strCountry}
+          </Text>
+          <Text
+            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          >
             {league.strCurrentSeason}
           </Text>
         </View>
@@ -59,7 +78,7 @@ export default function FavoriteLeagueCard({
           <Ionicons
             name={isFavorite ? "star" : "star-outline"}
             size={28}
-            color={isFavorite ? "#FFD700" : "#888"}
+            color={isFavorite ? "#FFD700" : isDark ? "#aaa" : "#888"}
           />
         </TouchableOpacity>
       </View>

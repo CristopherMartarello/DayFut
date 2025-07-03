@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Linking,
-  FlatList,
-} from "react-native";
+import { View, Text, ScrollView, Image, FlatList } from "react-native";
 import api from "../api/api";
 import InfoCard from "../components/InfoCard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SocialLink from "../components/SocialLink";
 import CommentSection from "../components/CommentSection";
+import { useTheme } from "../context/ThemeContext";
 
 export default function LeagueDetailsScreen({ route }) {
   const { leagueId } = route.params;
   const [league, setLeague] = useState(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const fetchLeague = async () => {
@@ -39,7 +34,7 @@ export default function LeagueDetailsScreen({ route }) {
       keyExtractor={() => "static"}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
-        <View className="bg-gray-100">
+        <View className={isDark ? "bg-zinc-900" : "bg-gray-100"}>
           {league.strFanart1 && (
             <Image
               source={{ uri: league.strFanart1 }}
@@ -48,14 +43,34 @@ export default function LeagueDetailsScreen({ route }) {
             />
           )}
 
-          <View className="mt-[-18px] bg-white p-6 rounded-3xl shadow-lg z-10">
-            <Text className="text-3xl font-bold mb-2">{league.strLeague}</Text>
+          <View
+            className={`mt-[-18px] p-6 rounded-t-3xl shadow-lg z-10 ${
+              isDark ? "bg-zinc-800" : "bg-white"
+            }`}
+          >
+            <Text
+              className={`text-3xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-black"
+              }`}
+            >
+              {league.strLeague}
+            </Text>
 
-            <Text className="mb-4 text-base text-gray-500">
+            <Text
+              className={`mb-4 text-base ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              }`}
+            >
               {league.strDescriptionEN || "Sem descrição disponível."}
             </Text>
 
-            <Text className="text-xl font-bold mb-2">Informações Gerais</Text>
+            <Text
+              className={`text-xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-black"
+              }`}
+            >
+              Informações Gerais
+            </Text>
 
             <View className="flex-row justify-center gap-3 mb-4">
               <InfoCard
@@ -74,11 +89,19 @@ export default function LeagueDetailsScreen({ route }) {
               />
             </View>
 
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base mb-1 ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              }`}
+            >
               <Text className="font-semibold">Temporada atual:</Text>{" "}
               {league.strCurrentSeason}
             </Text>
-            <Text className="text-base text-gray-500 mb-1">
+            <Text
+              className={`text-base mb-1 ${
+                isDark ? "text-gray-300" : "text-gray-500"
+              }`}
+            >
               <Text className="font-semibold">Esporte:</Text>{" "}
               {league.strSport === "Soccer" ? "Futebol" : league.strSport}
             </Text>
@@ -102,7 +125,13 @@ export default function LeagueDetailsScreen({ route }) {
             </View>
 
             {/* Redes Sociais */}
-            <Text className="text-xl font-bold mb-2 mt-6">Redes Sociais</Text>
+            <Text
+              className={`text-xl font-bold mb-2 mt-6 ${
+                isDark ? "text-white" : "text-black"
+              }`}
+            >
+              Redes Sociais
+            </Text>
             <SocialLink label="Website" url={league.strWebsite} />
             <SocialLink label="Facebook" url={league.strFacebook} />
             <SocialLink label="Instagram" url={league.strInstagram} />
@@ -112,7 +141,11 @@ export default function LeagueDetailsScreen({ route }) {
 
             {/* Galeria */}
             <View className="my-4">
-              <Text className="text-xl font-bold mb-2 text-gray-800">
+              <Text
+                className={`text-xl font-bold mb-2 ${
+                  isDark ? "text-white" : "text-gray-800"
+                }`}
+              >
                 Galeria
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -132,7 +165,7 @@ export default function LeagueDetailsScreen({ route }) {
         </View>
       }
       ListFooterComponent={
-        <View className="mt-4 px-4">
+        <View className={`${isDark ? "bg-zinc-900" : "bg-white"}`}>
           <CommentSection itemId={league.idLeague} itemType="league" />
         </View>
       }

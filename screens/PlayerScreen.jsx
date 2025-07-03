@@ -15,6 +15,7 @@ import { auth } from "../firebaseConfig";
 import FavoriteCard from "../components/FavoriteCard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../context/ThemeContext";
+import SectionHeader from "../components/SectionHeader";
 
 export default function PlayerScreen() {
   const { theme, toggleTheme } = useTheme();
@@ -146,24 +147,7 @@ export default function PlayerScreen() {
         ListHeaderComponent={
           <View>
             <View className="px-3">
-              <View className="flex-row justify-between items-center mb-4">
-                <Text
-                  className={`font-bold mb-2 text-xl ${
-                    isDark ? "text-gray-200" : "text-zinc-800"
-                  }`}
-                >
-                  Jogadores Favoritos
-                </Text>
-                <TouchableOpacity onPress={toggleTheme}>
-                  <Icon
-                    name={
-                      isDark ? "white-balance-sunny" : "moon-waning-crescent"
-                    }
-                    size={24}
-                    color={isDark ? "#facc15" : "#2563eb"}
-                  />
-                </TouchableOpacity>
-              </View>
+              <SectionHeader title={"Jogadores Favoritos"} />
               {favoritePlayersData.length === 0 ? (
                 <Text className={isDark ? "text-gray-400" : "text-gray-700"}>
                   Nenhum jogador favoritado.
@@ -203,7 +187,7 @@ export default function PlayerScreen() {
                   inputStyle={{ color: isDark ? "#fff" : undefined }}
                   style={{ backgroundColor: isDark ? "#27272a" : "#fff" }}
                   iconColor={isDark ? "#fff" : undefined}
-                  placeholderTextColor={isDark ? "#fff" : undefined}
+                  placeholderTextColor={isDark ? "#9ca3af" : undefined}
                 />
                 <Menu
                   visible={menuVisible === "league"}
