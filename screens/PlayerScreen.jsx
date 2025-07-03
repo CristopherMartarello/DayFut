@@ -16,9 +16,12 @@ import FavoriteCard from "../components/FavoriteCard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../context/ThemeContext";
 import SectionHeader from "../components/SectionHeader";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function PlayerScreen() {
   const { theme, toggleTheme } = useTheme();
+  const { state, dispatch } = useFavorites();
+  const favoritePlayersCount = state.players.length;
   const isDark = theme === "dark";
 
   const [teams, setTeams] = useState([]);
@@ -120,6 +123,26 @@ export default function PlayerScreen() {
     fetchFavorites();
   }, [refreshFavorites]);
 
+  useEffect(() => {
+    if (favoritePlayers.length > 0) {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "players",
+          items: [...favoritePlayers],
+        },
+      });
+    } else {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "players",
+          items: [],
+        },
+      });
+    }
+  }, [favoritePlayers]);
+
   const handleFavoriteChange = () => {
     setRefreshFavorites((prev) => !prev);
   };
@@ -147,7 +170,10 @@ export default function PlayerScreen() {
         ListHeaderComponent={
           <View>
             <View className="px-3">
-              <SectionHeader title={"Jogadores Favoritos"} />
+              <SectionHeader
+                title={"Jogadores Favoritos"}
+                count={favoritePlayersCount}
+              />
               {favoritePlayersData.length === 0 ? (
                 <Text className={isDark ? "text-gray-400" : "text-gray-700"}>
                   Nenhum jogador favoritado.

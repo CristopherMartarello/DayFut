@@ -18,6 +18,7 @@ import {
 import FavoriteLeagueCard from "../components/FavoriteLeagueCard";
 import SectionHeader from "../components/SectionHeader";
 import { useTheme } from "../context/ThemeContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function LeagueScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -27,6 +28,8 @@ export default function LeagueScreen() {
   const [refreshFavorites, setRefreshFavorites] = useState(false);
 
   const { theme } = useTheme();
+  const { state, dispatch } = useFavorites();
+  const favoriteLeaguesCount = state.leagues.length;
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -67,6 +70,26 @@ export default function LeagueScreen() {
   }, [refreshFavorites]);
 
   useEffect(() => {
+    if (favoriteLeagues.length > 0) {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "leagues",
+          items: [...favoriteLeagues],
+        },
+      });
+    } else {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "leagues",
+          items: [],
+        },
+      });
+    }
+  }, [favoriteLeagues]);
+
+  useEffect(() => {
     const trimmed = searchQuery.trim().toLowerCase();
     if (trimmed.length === 0) {
       setFilteredLeagues(leagues);
@@ -105,7 +128,10 @@ export default function LeagueScreen() {
           <View>
             {/* Favoritos */}
             <View className="px-3">
-              <SectionHeader title="Ligas Favoritas" />
+              <SectionHeader
+                title="Ligas Favoritas"
+                count={favoriteLeaguesCount}
+              />
               {favoritesData.length === 0 ? (
                 <Text
                   className={`mb-2 text-base ${

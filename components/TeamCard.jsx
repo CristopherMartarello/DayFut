@@ -6,10 +6,12 @@ import { auth } from "../firebaseConfig";
 import { addUserTeam, removeUserTeam } from "../services/userTeamsService";
 import api from "../api/api";
 import { useTheme } from "../context/ThemeContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { dispatch } = useFavorites();
   const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
@@ -19,8 +21,16 @@ export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
     try {
       if (isFavorite) {
         await removeUserTeam(userId, team.idTeam);
+        dispatch({
+          type: "REMOVE_FAVORITE",
+          payload: { category: "teams", item: team.idTeam },
+        });
       } else {
         await addUserTeam(userId, team.idTeam, team.strTeam);
+        dispatch({
+          type: "ADD_FAVORITE",
+          payload: { category: "teams", item: team.idTeam },
+        });
       }
 
       if (onFavoriteChange) {

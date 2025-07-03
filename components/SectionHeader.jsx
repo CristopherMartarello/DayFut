@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../context/ThemeContext";
 
-export default function SectionHeader({ title }) {
+export default function SectionHeader({ title, count }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -14,8 +14,9 @@ export default function SectionHeader({ title }) {
           isDark ? "text-gray-200" : "text-zinc-800"
         }`}
       >
-        {title}
+        {title} {count != null && <>({count})</>}
       </Text>
+
       <TouchableOpacity onPress={toggleTheme}>
         <Icon
           name={isDark ? "white-balance-sunny" : "moon-waning-crescent"}

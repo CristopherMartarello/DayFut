@@ -14,6 +14,7 @@ import TeamCard from "../components/TeamCard";
 import FavoriteTeamCard from "../components/FavoriteTeamCard";
 import { useTheme } from "../context/ThemeContext";
 import SectionHeader from "../components/SectionHeader";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function TeamScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -28,6 +29,8 @@ export default function TeamScreen() {
   const [refreshFavorites, setRefreshFavorites] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
+  const { state, dispatch } = useFavorites();
+  const favoriteTeamsCount = state.teams.length;
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -102,6 +105,26 @@ export default function TeamScreen() {
     fetchFavorites();
   }, [refreshFavorites]);
 
+  useEffect(() => {
+    if (favoriteTeams.length > 0) {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "teams",
+          items: [...favoriteTeams],
+        },
+      });
+    } else {
+      dispatch({
+        type: "SET_FAVORITES",
+        payload: {
+          category: "teams",
+          items: [],
+        },
+      });
+    }
+  }, [favoriteTeams]);
+
   const handleFavoriteChange = () => {
     setRefreshFavorites((prev) => !prev);
   };
@@ -131,7 +154,10 @@ export default function TeamScreen() {
         ListHeaderComponent={
           <View>
             <View className="px-3">
-              <SectionHeader title={"Times Favoritos"} />
+              <SectionHeader
+                title={"Times Favoritos"}
+                count={favoriteTeamsCount}
+              />
               {favoriteTeamsData.length === 0 ? (
                 <Text style={{ color: isDark ? "#ccc" : "#000" }}>
                   Nenhum time favoritado.

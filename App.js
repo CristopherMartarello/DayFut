@@ -13,6 +13,7 @@ import BottomTabs from './components/BottomTabs';
 import "./globals.css";
 import TeamsScreenDetail from './screens/TeamsScreenDetail';
 import { ThemeProvider } from './context/ThemeContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,24 +30,26 @@ export default function App() {
   return (
     <PaperProvider>
       <ThemeProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            {usuarioLogado ? (
-              <>
-                <Stack.Screen name="Home" component={BottomTabs} options={{ headerShown: false }} />
-                <Stack.Screen name="Jogador" component={PlayerDetailsScreen} />
-                <Stack.Screen name="Liga" component={LeagueScreenDetail} />
-                <Stack.Screen name="Time" component={TeamsScreenDetail} />
-              </>
-            ) : (
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{ headerShown: false }}
-              />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
+        <FavoritesProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              {usuarioLogado ? (
+                <>
+                  <Stack.Screen name="Home" component={BottomTabs} options={{ headerShown: false }} />
+                  <Stack.Screen name="Jogador" component={PlayerDetailsScreen} />
+                  <Stack.Screen name="Liga" component={LeagueScreenDetail} />
+                  <Stack.Screen name="Time" component={TeamsScreenDetail} />
+                </>
+              ) : (
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </FavoritesProvider>
       </ThemeProvider>
     </PaperProvider>
   );

@@ -8,10 +8,12 @@ import {
   removeUserLeague,
 } from "../services/userLeaguesService";
 import { useTheme } from "../context/ThemeContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { dispatch } = useFavorites();
   const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
@@ -19,8 +21,16 @@ export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
     if (!userId) return;
     if (isFavorite) {
       await removeUserLeague(userId, league.idLeague);
+      dispatch({
+        type: "REMOVE_FAVORITE",
+        payload: { category: "leagues", item: league.idLeague },
+      });
     } else {
       await addUserLeague(userId, league.idLeague);
+      dispatch({
+        type: "ADD_FAVORITE",
+        payload: { category: "leagues", item: league.idLeague },
+      });
     }
     if (onFavoriteChange) {
       onFavoriteChange();
