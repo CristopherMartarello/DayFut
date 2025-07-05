@@ -9,12 +9,13 @@ import {
 } from "../services/userPlayersService";
 import api from "../api/api";
 import { useTheme } from "../context/ThemeContext";
-import { useFavorites } from "../context/FavoritesContext";
+import { useDispatch } from "react-redux";
+import { addFavorite, removeFavorite } from "../redux/favoriteSlice";
 
 export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  const { dispatch } = useFavorites();
+  const dispatch = useDispatch();
   const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
@@ -22,16 +23,10 @@ export default function PlayerCard({ player, isFavorite, onFavoriteChange }) {
     if (!userId) return;
     if (isFavorite) {
       await removeUserFavorite(userId, player.idPlayer, "player");
-      dispatch({
-        type: "REMOVE_FAVORITE",
-        payload: { category: "players", item: player.idPlayer },
-      });
+      dispatch(removeFavorite({ category: "players", item: player.idPlayer }));
     } else {
       await addUserFavorite(userId, player.idPlayer, "player");
-      dispatch({
-        type: "ADD_FAVORITE",
-        payload: { category: "players", item: player.idPlayer },
-      });
+      dispatch(addFavorite({ category: "players", item: player.idPlayer }));
     }
     if (onFavoriteChange) {
       onFavoriteChange();

@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -13,7 +12,8 @@ import BottomTabs from './components/BottomTabs';
 import "./globals.css";
 import TeamsScreenDetail from './screens/TeamsScreenDetail';
 import { ThemeProvider } from './context/ThemeContext';
-import { FavoritesProvider } from './context/FavoritesContext';
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +30,7 @@ export default function App() {
   return (
     <PaperProvider>
       <ThemeProvider>
-        <FavoritesProvider>
+        <Provider store={store}>
           <NavigationContainer>
             <Stack.Navigator>
               {usuarioLogado ? (
@@ -49,7 +49,7 @@ export default function App() {
               )}
             </Stack.Navigator>
           </NavigationContainer>
-        </FavoritesProvider>
+        </Provider>
       </ThemeProvider>
     </PaperProvider>
   );

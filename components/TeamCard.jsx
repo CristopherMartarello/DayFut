@@ -6,12 +6,13 @@ import { auth } from "../firebaseConfig";
 import { addUserTeam, removeUserTeam } from "../services/userTeamsService";
 import api from "../api/api";
 import { useTheme } from "../context/ThemeContext";
-import { useFavorites } from "../context/FavoritesContext";
+import { useDispatch } from "react-redux";
+import { addFavorite, removeFavorite } from "../redux/favoriteSlice";
 
 export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  const { dispatch } = useFavorites();
+  const dispatch = useDispatch();
   const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
@@ -21,16 +22,10 @@ export default function TeamCard({ team, isFavorite, onFavoriteChange }) {
     try {
       if (isFavorite) {
         await removeUserTeam(userId, team.idTeam);
-        dispatch({
-          type: "REMOVE_FAVORITE",
-          payload: { category: "teams", item: team.idTeam },
-        });
+        dispatch(removeFavorite({ category: "teams", item: team.idTeam }));
       } else {
         await addUserTeam(userId, team.idTeam, team.strTeam);
-        dispatch({
-          type: "ADD_FAVORITE",
-          payload: { category: "teams", item: team.idTeam },
-        });
+        dispatch(addFavorite({ category: "teams", item: team.idTeam }));
       }
 
       if (onFavoriteChange) {

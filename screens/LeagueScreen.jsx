@@ -18,7 +18,8 @@ import {
 import FavoriteLeagueCard from "../components/FavoriteLeagueCard";
 import SectionHeader from "../components/SectionHeader";
 import { useTheme } from "../context/ThemeContext";
-import { useFavorites } from "../context/FavoritesContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setFavorites } from "../redux/favoriteSlice";
 
 export default function LeagueScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -28,8 +29,10 @@ export default function LeagueScreen() {
   const [refreshFavorites, setRefreshFavorites] = useState(false);
 
   const { theme } = useTheme();
-  const { state, dispatch } = useFavorites();
-  const favoriteLeaguesCount = state.leagues.length;
+  const dispatch = useDispatch();
+  const favoriteLeaguesCount = useSelector(
+    (state) => state.favorites.leagues.length
+  );
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -71,21 +74,19 @@ export default function LeagueScreen() {
 
   useEffect(() => {
     if (favoriteLeagues.length > 0) {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "leagues",
-          items: [...favoriteLeagues],
-        },
-      });
+          items: favoriteLeagues,
+        })
+      );
     } else {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "leagues",
           items: [],
-        },
-      });
+        })
+      );
     }
   }, [favoriteLeagues]);
 

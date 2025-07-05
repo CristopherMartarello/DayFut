@@ -13,15 +13,17 @@ import PlayerCard from "../components/PlayerCard";
 import { getUserPlayers } from "../services/userPlayersService";
 import { auth } from "../firebaseConfig";
 import FavoriteCard from "../components/FavoriteCard";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../context/ThemeContext";
 import SectionHeader from "../components/SectionHeader";
-import { useFavorites } from "../context/FavoritesContext";
+import { useSelector, useDispatch } from "react-redux";
+import { setFavorites } from "../redux/favoriteSlice";
 
 export default function PlayerScreen() {
   const { theme, toggleTheme } = useTheme();
-  const { state, dispatch } = useFavorites();
-  const favoritePlayersCount = state.players.length;
+  const dispatch = useDispatch();
+  const favoritePlayersCount = useSelector(
+    (state) => state.favorites.players.length
+  );
   const isDark = theme === "dark";
 
   const [teams, setTeams] = useState([]);
@@ -125,21 +127,19 @@ export default function PlayerScreen() {
 
   useEffect(() => {
     if (favoritePlayers.length > 0) {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "players",
-          items: [...favoritePlayers],
-        },
-      });
+          items: favoritePlayers,
+        })
+      );
     } else {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "players",
           items: [],
-        },
-      });
+        })
+      );
     }
   }, [favoritePlayers]);
 

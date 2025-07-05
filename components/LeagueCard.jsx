@@ -8,12 +8,14 @@ import {
   removeUserLeague,
 } from "../services/userLeaguesService";
 import { useTheme } from "../context/ThemeContext";
-import { useFavorites } from "../context/FavoritesContext";
+import { useDispatch } from "react-redux";
+import { addFavorite, removeFavorite } from "../redux/favoriteSlice";
 
 export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  const { dispatch } = useFavorites();
+  const dispatch = useDispatch();
+
   const isDark = theme === "dark";
 
   const handleToggleFavorite = async () => {
@@ -21,16 +23,10 @@ export default function LeagueCard({ league, isFavorite, onFavoriteChange }) {
     if (!userId) return;
     if (isFavorite) {
       await removeUserLeague(userId, league.idLeague);
-      dispatch({
-        type: "REMOVE_FAVORITE",
-        payload: { category: "leagues", item: league.idLeague },
-      });
+      dispatch(removeFavorite({ category: "leagues", item: league.idLeague }));
     } else {
       await addUserLeague(userId, league.idLeague);
-      dispatch({
-        type: "ADD_FAVORITE",
-        payload: { category: "leagues", item: league.idLeague },
-      });
+      dispatch(addFavorite({ category: "leagues", item: league.idLeague }));
     }
     if (onFavoriteChange) {
       onFavoriteChange();

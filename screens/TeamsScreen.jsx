@@ -14,7 +14,8 @@ import TeamCard from "../components/TeamCard";
 import FavoriteTeamCard from "../components/FavoriteTeamCard";
 import { useTheme } from "../context/ThemeContext";
 import SectionHeader from "../components/SectionHeader";
-import { useFavorites } from "../context/FavoritesContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setFavorites } from "../redux/favoriteSlice";
 
 export default function TeamScreen() {
   const [leagues, setLeagues] = useState([]);
@@ -29,8 +30,10 @@ export default function TeamScreen() {
   const [refreshFavorites, setRefreshFavorites] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
-  const { state, dispatch } = useFavorites();
-  const favoriteTeamsCount = state.teams.length;
+  const dispatch = useDispatch();
+  const favoriteTeamsCount = useSelector(
+    (state) => state.favorites.teams.length
+  );
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -107,21 +110,19 @@ export default function TeamScreen() {
 
   useEffect(() => {
     if (favoriteTeams.length > 0) {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "teams",
-          items: [...favoriteTeams],
-        },
-      });
+          items: favoriteTeams,
+        })
+      );
     } else {
-      dispatch({
-        type: "SET_FAVORITES",
-        payload: {
+      dispatch(
+        setFavorites({
           category: "teams",
           items: [],
-        },
-      });
+        })
+      );
     }
   }, [favoriteTeams]);
 
